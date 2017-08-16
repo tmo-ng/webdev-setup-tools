@@ -1,93 +1,12 @@
 {
-  "name": "tmo-aem-ui",
-  "version": "3.0.0",
-  "description": "Next Gen Tmobile.com",
-  "private": true,
-  "engines": {
-    "node": ">=7.0.0"
-  },
-  "scripts": {
-    "merge": "node tools/pr.js",
-    "setup": "echo \"Call node script to install global and local npm deps as well as setup protractor",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "lib/setup.js",
+  "name": "TMNG-setup",
   "repository": {
-    "managed_branches": [
-      {
-        "branch": "tmo-integration",
-        "default": true,
-        "locked": false
-      },
-      {
-        "branch": "tmo-daily-release",
-        "default": false,
-        "locked": true
-      },
-      {
-        "branch": "tmo-release",
-        "default": false,
-        "locked": true
-      }
-    ]
-  },
-  "jenkins": {
-    "protocol": "http",
-    "host": "cst-jenkins.corporate.t-mobile.com",
-    "port": "8080",
-    "pullRequestJob": {
-      "path": "job/tmng/job/AEM-UI/job/DEV/job/Auto-Pull-Request-Creation/buildWithParameters",
-      "urlTemplate": "${PROTOCOL}://${USER_ID}:${TOKEN}@${HOST}:${PORT}/${PATH}?${QUERYSTRING}"
-    }
+    "type": "git",
+    "url": "https://github.com/cdejarlais/TMNG-setup.git"
   },
   "devDependencies": {
     "semver": "5.3.0",
-    "colors": "1.1.2",
-    "gitconfig": "2.0.3",
-    "lodash": "4.17.4",
-    "moment": "2.18.1",
-    "nodegit": "0.18.3",
-    "readline-sync": "1.4.7",
-    "request": "2.81.0",
-    "shelljs": "0.7.8"
-  },
-  "globals": {
-    "npm": {
-      "angular-cli": "1.0.0-beta.28.3",
-      "grunt-cli": "1.2.0",
-      "gulp-cli": "1.3.0",
-      "bower": "1.8.0",
-      "gulp": "3.9.1",
-      "npm-check": "5.4.4",
-      "p-s": "4.1.0",
-      "trash-cli": "1.4.0",
-      "rxjs": "^5.0.1",
-      "yarn": "0.27.5"
-    },
-    "windows": {
-      "windows-build-tools": "^1.2.0"
-    },
-    "ruby": "^2.3.0",
-    "engines": {
-      "node": ">=5.0.0",
-      "java": ">=1.7.0"
-    },
-    "gems": {
-      "sass": "^3.0.0"
-    },
-    "maven": "^3.0.0",
-    "aem": {
-      "jar_files": {
-        "aem6-author-p4502.jar": "https://artifactory.corporate.t-mobile.com/artifactory/mag-upf-snapshot-local/com/aem/aem6-author-p4502.jar"
-      },
-      "license": {
-        "license.properties": "https://artifactory.corporate.t-mobile.com/artifactory/mag-upf-snapshot-local/com/aem/license.properties"
-      },
-      "zip_files": {
-        "acs-aem-commons-content-2.12.0-min.zip": "https://github.com/Adobe-Consulting-Services/acs-aem-commons/releases/download/acs-aem-commons-2.12.0/acs-aem-commons-content-2.12.0-min.zip",
-        "AEM-6.1-Service-Pack-2-6.1.SP2.zip": "https://artifactory.corporate.t-mobile.com/artifactory/mag-upf-snapshot-local/com/aem/AEM-6.1-Service-Pack-2-6.1.SP2.zip",
-        "cq-6.1.0-sp2-cfp-wrapper-1.0.zip": "https://artifactory.corporate.t-mobile.com/artifactory/mag-upf-snapshot-local/com/aem/cq-6.1.0-sp2-cfp-wrapper-1.0.zip",
-        "BRT_content_0728.zip": "https://artifactory.corporate.t-mobile.com/artifactory/mag-upf-snapshot-local/com/aem/BRT_content_0728.zip"
-      }
-    }
+    "request": "2.81.0"
   }
 }
