@@ -1,10 +1,20 @@
 {
   "main": "lib/setup.js",
   "name": "TMNG-setup",
+  "version": "0.0.1",
+  "description": "Setup necessary development tools for the TMNG team at T-Mobile",
   "repository": {
     "type": "git",
     "url": "https://github.com/cdejarlais/TMNG-setup.git"
   },
+  "keywords": [
+    "installGlobalNpmDependencies",
+    "installRuby",
+    "installAemDependencies",
+    "checkForGemUpdates",
+    "installJava",
+    "fullInstall"
+  ],
   "devDependencies": {
     "semver": "5.3.0",
     "request": "2.81.0"
