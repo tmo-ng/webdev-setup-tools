@@ -18,5 +18,15 @@
   "devDependencies": {
     "semver": "5.3.0",
     "request": "2.81.0"
-  }
+  },
+  "contributors": [
+    {
+      "name" : "Kendrick Burson",
+      "email": "Kendrick.Burson3@T-Mobile.com"
+    },
+    {
+      "name" : "Chris DeJarlais",
+      "email": "Christopher.DeJarlais1@T-Mobile.com"
+    }
+  ]
 }
