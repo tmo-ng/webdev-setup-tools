@@ -1,7 +1,7 @@
 {
   "main": "lib/setup.js",
   "name": "TMNG-setup",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Setup necessary development tools for the TMNG team at T-Mobile",
   "repository": {
     "type": "git",
