@@ -16,6 +16,12 @@
     "installMaven",
     "installEverything"
   ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/cdejarlais/TMNG-setup/blob/master/LICENSE-MIT.md"
+    }
+  ],
   "devDependencies": {
     "semver": "5.3.0",
     "request": "2.81.0"
