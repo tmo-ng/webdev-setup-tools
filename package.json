@@ -22,7 +22,7 @@
       "url": "https://github.com/cdejarlais/TMNG-setup/blob/master/LICENSE-MIT.md"
     }
   ],
-  "devDependencies": {
+  "dependencies": {
     "semver": "5.3.0",
     "request": "2.81.0"
   },
