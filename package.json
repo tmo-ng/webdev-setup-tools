@@ -8,12 +8,13 @@
     "url": "https://github.com/cdejarlais/TMNG-setup.git"
   },
   "keywords": [
-    "installGlobalNpmDependencies",
+    "installNpmGlobals",
     "installRuby",
-    "installAemDependencies",
-    "checkForGemUpdates",
+    "installAem",
+    "installGems",
     "installJava",
-    "fullInstall"
+    "installMaven",
+    "installEverything"
   ],
   "devDependencies": {
     "semver": "5.3.0",
