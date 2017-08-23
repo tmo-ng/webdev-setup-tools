@@ -14,18 +14,25 @@ available, and it uses the semantic versions in the globals field to identify th
   npm install tmng-setup-tools --save
 
 ## Usage
-  // install ruby, required gems, install java, install maven, install all aem dependencies
+  ***install ruby, required gems, java, maven, and all aem dependencies
+  ```sh
   node -e "require('tmng-setup-tools').installEverything()"
+  ```
 
-  // install maven and configure environment variables
+  ***install maven and configure environment variables
+  ```sh
   node -e "require('tmng-setup-tools').installMaven()"
+  ```
 
-  // download and install all required aem dependencies
+  ***download and install all required aem dependencies
+  ```sh
   node -e "require('tmng-setup-tools').installAem()"
+  ```
 
-  // install ruby and configure environment variables
+  ***install ruby and configure environment variables
+  ```sh
   node -e "require('tmng-setup-tools').installRuby()"
-
+  ```
 ## Release History
 
 * 0.1.0 Initial release
