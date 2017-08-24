@@ -26,13 +26,13 @@ let findRequiredAndOptionalUpdates = (userGlobals, projectGlobals, highestVersio
     let requiredInstall = [];
     for (let index = 0; index < highestVersion.length; index++) {
         let module = highestVersion[index];
-        if (!userGlobals[module.name]) { // need to validate the version of the module
+        if (!userGlobals[module.name]) { // install nonexistent
             console.log('missing required project package ' + module.name + '.');
             requiredInstall.push(module);
-        } else if (semver.outside(userGlobals[module.name], projectGlobals[module.name], '<')) {
+        } else if (semver.outside(userGlobals[module.name], projectGlobals[module.name], '<')) { // install incompatible
             console.log('package ' + module.name + ' version ' + userGlobals[module.name] + ' is not compatible with the project.');
             requiredInstall.push(module);
-        } else if (semver.gt(module.highestCompatibleVersion, userGlobals[module.name])) {
+        } else if (semver.gt(module.highestCompatibleVersion, userGlobals[module.name])) { // optional update
             optionalInstall.push(module);
         }
     }
@@ -77,7 +77,7 @@ let executeSystemCommand = (commandToExecute, outputOptions) => {
         let systemCommand = exec(commandToExecute, {maxBuffer: 1024 * 500}, (error, osResponse, stderr) => {
             if (error) {
                 reject(Error(error));
-            } else if (stderr) {
+            } else if (stderr && !outputOptions.stderr) {
                 console.log(stderr);
             }
             outputOptions.resolve(resolve, osResponse);
@@ -118,7 +118,7 @@ let findHighestCompatibleVersion = (globalPackage, projectGlobals, listVersionsC
     return executeSystemCommand(listVersionsCommand, matchVersionsOptions);
 };
 
-let confirmOptionalInstallation = (installCallback, displayPrompt) => {
+let confirmOptionalInstallation = (displayPrompt, installCallback) => {
     return displayUserPrompt(displayPrompt)
         .then(response => {
             if (!response.startsWith('n')) {
@@ -156,15 +156,16 @@ let listOptionals = optionalPackages => {
 let installGlobalNpmDependencies = () => {
     let userState = {};
     let findVersion = (dependency, projectGlobals) => {
-        return findHighestCompatibleVersion(dependency, projectGlobals, getSystemCmd('npm info ' + dependency + ' versions --json'));
+        let getNpmPackageVersions = getSystemCmd('npm info ' + dependency + ' versions --json');
+        return findHighestCompatibleVersion(dependency, projectGlobals, getNpmPackageVersions);
     };
     let getGlobals = modules => {
         return getAllUserGlobals(modules, /([a-z-A-Z]+)@([0-9]+(?:\.[0-9-a-z]+)+)/g);
     };
-    const npmListUserGlobals = 'npm ls -g';
+    const npmListUserGlobals = getSystemCmd('npm ls -g');
     const npmInstallModuleAsGlobal = 'npm install -g';
     console.log('getting installed node modules.');
-    return findUserGlobals(getSystemCmd(npmListUserGlobals), getGlobals)
+    return findUserGlobals(npmListUserGlobals, getGlobals)
         .catch(error => { // this will catch if the user has unmet dependencies on existing npm packages
             console.log(error);
         })
@@ -200,7 +201,7 @@ let installGlobalNpmDependencies = () => {
             if (userState.windows && userState.windows.optional.length > 0) {
                 console.log('windows updates exist for the following packages: ');
                 listOptionals(userState.windows.optional);
-                return confirmOptionalInstallation(() => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.windows.optional, npmInstallModuleAsGlobal, '@')), options), 'do you want to install these optional windows updates now (y/n)?  ');
+                return confirmOptionalInstallation('do you want to install these optional windows updates now (y/n)?  ', () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.windows.optional, npmInstallModuleAsGlobal, '@')), options));
             }
 
         })
@@ -208,7 +209,7 @@ let installGlobalNpmDependencies = () => {
             if (userState.npm.optional.length > 0) {
                 console.log('npm updates exist for the following packages: ');
                 listOptionals(userState.npm.optional);
-                return confirmOptionalInstallation(() => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.npm.optional, npmInstallModuleAsGlobal, '@')), options), 'do you want to install these optional npm updates now (y/n)?  ');
+                return confirmOptionalInstallation('do you want to install these optional npm updates now (y/n)?  ', () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.npm.optional, npmInstallModuleAsGlobal, '@')), options));
             }
         })
         .then(() => {
@@ -261,9 +262,10 @@ let downloadPackage = (hyperlink, downloadPath) => {
     });
 };
 let checkRubyInstallWindows = () => {
-    const rubyUrlWindows = 'https://rubyinstaller.org/downloads/archives/';
-    const rubyHyperlinkPattern = /https[^"]+rubyinstaller-([0-9.]+)[0-9-p]*x64.exe/g;
-    return executeSystemCommand('ruby -v', {resolve: options.resolve})
+    let rubyUrlWindows = 'https://rubyinstaller.org/downloads/archives/';
+    let rubyHyperlinkPattern = /https[^"]+rubyinstaller-([0-9.]+)[0-9-p]*x64.exe/g;
+    let getRubyVersion = getSystemCmd('ruby -v');
+    return executeSystemCommand(getRubyVersion, {resolve: options.resolve})
         .catch(() => {
             console.log('no version of ruby is installed on this computer');
         })
@@ -272,33 +274,35 @@ let checkRubyInstallWindows = () => {
                 return rubyVersion.match(versionPattern)[0];
             }
         })
-        .then(localRubyVersion => getVersionsWithRequest(rubyUrlWindows, rubyHyperlinkPattern, packageGlobals.ruby)
-            .then(remoteRubyVersion => {
-                let installRuby = () => {
-                    let path = remoteRubyVersion.downloadHyperlink;
-                    let rubyDownloadPath = process.env.USERPROFILE + '\\Downloads\\' +
-                        path.substring(path.lastIndexOf('/') + 1, path.length);
-                    return downloadPackage(path, rubyDownloadPath)
-                        .then(rubyFilePath => {
-                            let startRubyInstall = rubyFilePath + ' /verysilent /tasks="modpath"';
-                            return executeSystemCommand(startRubyInstall, options);
-                        });
-                };
-                if (!localRubyVersion || semver.outside(localRubyVersion, packageGlobals.ruby, '<')) {
-                    if (localRubyVersion) {
-                        console.log('local ruby version is ' + localRubyVersion + ' package requires ' + packageGlobals.ruby);
-                    }
-                    console.log('installing ruby now');
-                    return installRuby();
-                } else {
-                    if (semver.gt(remoteRubyVersion.version, localRubyVersion)) {
-                        console.log('a newer version of ruby, version ' + remoteRubyVersion.version + ' is now available.');
-                        return confirmOptionalInstallation(() => installRuby(), 'do you want to install this optional ruby upgrade now (y/n)?  ');
+        .then(localRubyVersion => {
+            return getVersionsWithRequest(rubyUrlWindows, rubyHyperlinkPattern, packageGlobals.ruby)
+                .then(remoteRubyVersion => {
+                    let installRuby = () => {
+                        let path = remoteRubyVersion.downloadHyperlink;
+                        let rubyDownloadPath = process.env.USERPROFILE + '\\Downloads\\' +
+                            path.substring(path.lastIndexOf('/') + 1, path.length);
+                        return downloadPackage(path, rubyDownloadPath)
+                            .then(rubyFilePath => {
+                                let startRubyInstall = rubyFilePath + ' /verysilent /tasks="modpath"';
+                                return executeSystemCommand(startRubyInstall, options);
+                            });
+                    };
+                    if (!localRubyVersion || semver.outside(localRubyVersion, packageGlobals.ruby, '<')) {
+                        if (localRubyVersion) {
+                            console.log('local ruby version is ' + localRubyVersion + ' package requires ' + packageGlobals.ruby);
+                        }
+                        console.log('installing ruby now');
+                        return installRuby();
                     } else {
-                        console.log('local ruby version ' + localRubyVersion + ' is up to date.');
+                        if (semver.gt(remoteRubyVersion.version, localRubyVersion)) {
+                            console.log('a newer version of ruby, version ' + remoteRubyVersion.version + ' is now available.');
+                            return confirmOptionalInstallation('do you want to install this optional ruby upgrade now (y/n)?  ', () => installRuby());
+                        } else {
+                            console.log('local ruby version ' + localRubyVersion + ' is up to date.');
+                        }
                     }
-                }
-            }));
+                });
+        });
 };
 let checkRvmInstallMacLinux = () => {
     const rvmInstallMacLinux = 'curl -sSL https://get.rvm.io | bash -s -- --ignore-dotfiles';
@@ -352,7 +356,7 @@ let checkRvmInstallMacLinux = () => {
                     return installRuby();
                 } else if (semver.lt(rubyVersion, versionToInstall)) {
                     console.log('a newer version of ruby, version ' + versionToInstall + ' is available.');
-                    return confirmOptionalInstallation(() => installRuby(), 'do you want to install this optional ruby update now (y/n)?  ');
+                    return confirmOptionalInstallation('do you want to install this optional ruby update now (y/n)?  ', () => installRuby());
                 } else {
                     console.log(rubyVersion + ' satisfies package requirements');
                     return rubyVersion;
@@ -518,10 +522,10 @@ let checkForGemUpdates = () => {
             if (gemUpdates.optional.length > 0) {
                 console.log('gem updates exist for the following packages: ');
                 listOptionals(gemUpdates.optional);
-                return confirmOptionalInstallation(() => {
+                return confirmOptionalInstallation('do you want to install these optional gem updates now (y/n)?  ', () => {
                     let gemInstall = getSystemCmd(getInstallationCommand(gemUpdates.optional, 'gem install', ':'));
                     return executeSystemCommand(gemInstall, options);
-                }, 'do you want to install these optional gem updates now (y/n)?  ');
+                });
             }
         })
         .then(() => {
@@ -680,7 +684,7 @@ let installAemDependencies = () => {
             return aemInstallationProcedure();
         })
         .catch(() => {
-            //AEM is not installed, run full aem installation procedure here
+            // AEM is not installed, run full aem installation procedure here
             console.log('installing all aem dependencies now...');
             return aemInstallationProcedure();
         });
@@ -691,12 +695,12 @@ let installRuby = () => {
 let installJava = () => {
     let javaOptions = {};
     javaOptions.resolve = options.resolve;
-    javaOptions.stdout = options.stdout;
-    javaOptions.stderr = (resolve, reject, data) => { // check the java version, by default the output is directed to stderr
+    javaOptions.stderr = (resolve, reject, data) => { // by default the output is directed to stderr
         resolve(data);
     };
     console.log('checking java version compatibility.');
-    let checkJavaCompilerVersion = 'javac -version';
+    // important to test the java compiler is in path, windows does not add to path by default
+    let checkJavaCompilerVersion = getSystemCmd('javac -version');
     return executeSystemCommand(checkJavaCompilerVersion, javaOptions)
         .catch(() => { //java commands are redirected to stderr in both windows and linux environments
             console.log('no jdk version found on this computer');
@@ -715,7 +719,7 @@ let installJava = () => {
         });
 };
 let installMaven = () => {
-    const checkMavenVersion = 'mvn -v';
+    const checkMavenVersion = getSystemCmd('mvn -v');
     return executeSystemCommand(checkMavenVersion, {resolve: options.resolve})
         .catch(() => {
             console.log('No version of maven detected. Installing maven now.');
