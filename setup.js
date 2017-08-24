@@ -2,7 +2,7 @@
 const semver = require('semver');
 const os = require('os');
 const operatingSystem = os.platform().trim(); // supported values are darwin (osx), linux (ubuntu), and win32 ()
-const packageGlobals = require('../package.json').globals;
+const packageGlobals = require('../../package.json').globals;
 const {exec} = require('child_process');
 const request = require('request');
 const fs = require('fs');

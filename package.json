@@ -1,5 +1,5 @@
 {
-  "main": "lib/setup.js",
+  "main": "setup.js",
   "name": "tmng-setup-tools",
   "version": "0.1.0",
   "description": "Setup necessary development tools for the TMNG team at T-Mobile",
