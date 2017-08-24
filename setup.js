@@ -767,9 +767,13 @@ let runGruntPremerge = () => {
     premergeOptions.exit = (resolve, reject, data) => {
         resolve(data);
     };
-    let gruntPremerge = 'cd ' + goUpDirectories(1) + 'angular-ui';
-    gruntPremerge += (operatingSystem === 'win32') ? ';' + getNpmPathOnWindows() + '\\grunt.cmd pre-merge' : ' && grunt pre-merge';
-    return executeSystemCommand(getSystemCmd(gruntPremerge), premergeOptions)
+
+    let gruntCmd = 'cd ' + goUpDirectories(1) + 'angular-ui';
+
+    // handle older versions of windows that do not source npm cmd's correctly
+    gruntCmd += (operatingSystem === 'win32') ? ';' + getNpmPathOnWindows() + '\\grunt.cmd pre-merge' : ' && grunt pre-merge';
+    let fullGruntCmd = getSystemCmd(gruntCmd);
+    return executeSystemCommand(fullGruntCmd, premergeOptions)
         .catch(error => {
             console.log('failed to complete grunt pre-merge, failed with message:\n');
             console.log(error);
