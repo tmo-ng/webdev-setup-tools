@@ -13,7 +13,7 @@ has an older compatible version of a package, the user can choose to ignore an u
 an older incompatible package, this package will be updated to the highest compatible version of the package
 automatically.
 
-It was also developed to work on Windows, OSX, and Linux. It has been tested on Windows 7, Windows 10,
+It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
 OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ## Installation
@@ -21,6 +21,9 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
   npm install tmng-setup-tools --save
 
 ## Usage
+  **Note:** The commands below can be pasted directly into a administrative command prompt window for Windows
+  users, or a terminal window for OSX and Linux users.
+
   install/update all required npm globals
   ```sh
     node -e "require('tmng-setup-tools').installNpmGlobals()"
@@ -61,11 +64,11 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ### Important Notes
 
-**Note:** In order to install most packages, users will need to have admin access on their computer.
+**Note:** In order to install most packages, users will need to have administrative access on their computer.
 
 **Note:** Users running Windows must have powershell script execution enabled. Powershell script execution
 is disabled by default as a security feature on many windows distributions. Script execution policy
-must either be set to "remotesigned" or "unrestricted", although it is recommended to set the
+can either be set to "remotesigned" or "unrestricted", although it is recommended to set the
 policy to "remotesigned" to maintain the highest level of security.
 
 **Note:**  To view the current powershell execution policy for windows, copy and paste the following command in
@@ -83,11 +86,12 @@ a command prompt:
   ```
 
 **Note:** Users running Windows 7 must upgrade to powershell 3.0 ([`Windows Management Framework 3.0`](https://www.microsoft.com/en-us/download/details.aspx?id=34595)).
-By default, Windows 7 comes installed with powershell 2.0. It typically requires a system restart after install.
-Users running windows 8 and above have all required powershell tools installed by default.
+By default, Windows 7 comes installed with powershell 2.0. Installation typically requires a system restart.
+Users running windows 8 and above have all minimum powershell tools installed by default.
 
-**Note:** the .net framework version 4.5 or above is required for script execution for Windows.
-This is a prerequisite for most modern text editors, but does not come installed by default on Windows 7.
+**Note:** .net framework version 4.5 or above is required for script execution on Windows.
+This is a prerequisite for many modern software packages, but is not present on Windows 7
+out of the box.
 
 
 ## Release History
