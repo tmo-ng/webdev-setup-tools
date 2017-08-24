@@ -18,7 +18,7 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ## Installation
 
-  npm install tmng-setup-tools --save
+  npm install https://github.com/cdejarlais/tmng-setup-tools.git --save
 
 ## Usage
   **Note:** The commands below can be pasted directly into a administrative command prompt window for Windows
