@@ -38,10 +38,10 @@ let findRequiredAndOptionalUpdates = (userGlobals, projectGlobals, highestVersio
     }
     return {required: requiredInstall, optional: optionalInstall};
 };
-let findLatestVersion  = (projectGlobals, searchFunction) => {
+let runListOfPromises  = (projectGlobals, promise) => {
     let promises = [];
     Object.keys(projectGlobals).forEach(dependency => {
-        promises.push(searchFunction(dependency, projectGlobals));
+        promises.push(promise(dependency, projectGlobals));
     });
     return Promise.all(promises).then(packageVersions => {
         return packageVersions;
@@ -173,7 +173,7 @@ let installGlobalNpmDependencies = () => {
             userState.userGlobals = userGlobals;
             if (operatingSystem === 'win32') { // flag for additional install requirements
                 userState.windows = {};
-                return findLatestVersion(packageGlobals.windows, findVersion)
+                return runListOfPromises(packageGlobals.windows, findVersion)
                     .then(windowsPackages => {
                         let windowsUpdates = findRequiredAndOptionalUpdates(userGlobals, packageGlobals.windows, windowsPackages);
                         userState.windows.required = windowsUpdates.required;
@@ -186,7 +186,7 @@ let installGlobalNpmDependencies = () => {
                     })
             }
         })
-        .then(() => findLatestVersion(packageGlobals.npm, findVersion)
+        .then(() => runListOfPromises(packageGlobals.npm, findVersion)
             .then(npmPackages => {
                 userState.npm = {};
                 let npmUpdates = findRequiredAndOptionalUpdates(userState.userGlobals, packageGlobals.npm, npmPackages);
@@ -516,7 +516,7 @@ let checkForGemUpdates = () => {
     return findUserGlobals(gemListLocal, getGlobals)
         .then(globals => {
             localGems = globals;
-            return findLatestVersion(packageGlobals.gems, findVersion);
+            return runListOfPromises(packageGlobals.gems, findVersion);
         })
         .then(gems => {
             remoteGems = gems;
@@ -638,7 +638,7 @@ let startAemServer = (commandSeparator, jarName) =>{
     executeSystemCommand(getSystemCmd(startServer), options);
 };
 let downloadAllAemFiles = folderSeparator => () => {
-    return findLatestVersion(packageGlobals.aem.zip_files, (dependency, globalPackage) => {
+    return runListOfPromises(packageGlobals.aem.zip_files, (dependency, globalPackage) => {
         console.log('downloading aem dependency ' + dependency);
         return downloadPackage(globalPackage[dependency], os.homedir() + folderSeparator + 'Downloads' + folderSeparator + dependency);
     });
@@ -656,12 +656,12 @@ let aemInstallationProcedure = () => {
     return executeSystemCommand('mkdir ' + aemFolderPath, options)
         .then(() => {
             console.log('downloading jar file into AEM folder.');
-            return findLatestVersion(packageGlobals.aem.jar_files, downloadFile);
+            return runListOfPromises(packageGlobals.aem.jar_files, downloadFile);
         })
         .then(fileName => {
             jarName = fileName;
             console.log('downloading license file into AEM folder.');
-            return findLatestVersion(packageGlobals.aem.license, downloadFile);
+            return runListOfPromises(packageGlobals.aem.license, downloadFile);
         })
         .then(copyNodeFile(folderSeparator))
         .then(() => startAemServer(commandSeparator, jarName))
