@@ -201,7 +201,8 @@ let installGlobalNpmDependencies = () => {
             if (userState.windows && userState.windows.optional.length > 0) {
                 console.log('windows updates exist for the following packages: ');
                 listOptionals(userState.windows.optional);
-                return confirmOptionalInstallation('do you want to install these optional windows updates now (y/n)?  ', () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.windows.optional, npmInstallModuleAsGlobal, '@')), options));
+                return confirmOptionalInstallation('do you want to install these optional windows updates now (y/n)?  ',
+                    () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.windows.optional, npmInstallModuleAsGlobal, '@')), options));
             }
 
         })
@@ -209,7 +210,8 @@ let installGlobalNpmDependencies = () => {
             if (userState.npm.optional.length > 0) {
                 console.log('npm updates exist for the following packages: ');
                 listOptionals(userState.npm.optional);
-                return confirmOptionalInstallation('do you want to install these optional npm updates now (y/n)?  ', () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.npm.optional, npmInstallModuleAsGlobal, '@')), options));
+                return confirmOptionalInstallation('do you want to install these optional npm updates now (y/n)?  ',
+                    () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.npm.optional, npmInstallModuleAsGlobal, '@')), options));
             }
         })
         .then(() => {
@@ -232,15 +234,19 @@ let getVersionsWithRequest = (productUrl, hyperlinkPattern, range) => {
                 reject(error);
             }
             let match = hyperlinkPattern.exec(body);
-            let highestVersion = {};
-            while (match !== null && !highestVersion.version) {
-                if (semver.satisfies(match[1], range)) {
-                    highestVersion.downloadHyperlink = match[0];
-                    highestVersion.version = match[1];
-                }
+            let versionMap = {};
+            while (match !== null) {
+                let downloadLink = match[0];
+                let version = match[1];
+                versionMap[version] = downloadLink;
                 match = hyperlinkPattern.exec(body);
             }
-            resolve(highestVersion);
+            let arrayOfVersions = Object.keys(versionMap);
+            let highestVersion = semver.maxSatisfying(arrayOfVersions, range);
+            let highestVersionObj = {};
+            highestVersionObj.downloadHyperlink = versionMap[highestVersion];
+            highestVersionObj.version = highestVersion;
+            resolve(highestVersionObj);
         });
     });
 };
@@ -309,7 +315,8 @@ let checkRvmInstallMacLinux = () => {
     const rvmGetAllRemoteRubyVersions = convertToBashLoginCommand('rvm list known');
     const rvmGetAllLocalRubyVersions = convertToBashLoginCommand('rvm list');
     const rvmSetLocalRubyDefault = 'rvm --default use ';
-    return executeSystemCommand('which rvm', {resolve: options.resolve})
+    let checkForExistingRvm = getSystemCmd('which rvm');
+    return executeSystemCommand(checkForExistingRvm, {resolve: options.resolve})
         .catch(() => {
             console.log('no version of rvm is installed on this computer');
         })
