@@ -356,7 +356,8 @@ let checkRvmInstallMacLinux = () => {
                 return semver.maxSatisfying(versions, packageGlobals.ruby);
             })
             .then(versionToInstall => {
-                let installRuby = () => executeSystemCommand('bash -l -c "rvm install ' + versionToInstall + '"', options)
+                let installRubyVersionCmd = getSystemCmd('rvm install ' + versionToInstall);
+                let installRuby = () => executeSystemCommand(installRubyVersionCmd, options)
                     .then(() => versionToInstall);
                 if (!rubyVersion) {
                     console.log('no version of ruby detected, installing version ' + versionToInstall + ' now');
