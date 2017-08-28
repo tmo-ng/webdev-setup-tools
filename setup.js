@@ -363,8 +363,8 @@ let checkRvmInstallMacLinux = () => {
                 return executeSystemCommand(getSystemCmd('rvm install ' + versionToInstall), options)
                     .then(() => versionToInstall);
             };
-            if (!localRubyVersion) {
-                console.log('no version of ruby detected, installing version ' + versionToInstall + ' now');
+            if (!localRubyVersion || semver.outside(localRubyVersion, packageGlobals.ruby, '<')) {
+                console.log('no compatible version of ruby detected, installing version ' + versionToInstall + ' now');
                 return installRuby();
             } else if (semver.lt(localRubyVersion, versionToInstall)) {
                 console.log('a newer version of ruby, version ' + versionToInstall + ' is available.');
