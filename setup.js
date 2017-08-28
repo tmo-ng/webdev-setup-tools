@@ -99,7 +99,7 @@ let executeSystemCommand = (commandToExecute, outputOptions) => {
         }
     });
 };
-let findHighestCompatibleVersion = (globalPackage, projectGlobals, listVersionsCommand) => {
+let findHighestCompatibleVersion = (globalPackage, projectGlobals, listVersionsCommand) => { // get highest version from terminal or prompt output
     const nodeVersionPattern = /([0-9]+(?:\.[0-9-a-z]+)+)/g;
     let matchVersionsOptions = {
         resolve: (resolve, data) => {
@@ -129,7 +129,7 @@ let confirmOptionalInstallation = (displayPrompt, installCallback) => {
             }
         });
 };
-let getAllUserGlobals = (installedModules, modulePattern) => {
+let getAllUserGlobals = (installedModules, modulePattern) => { // return a map of all modules user has installed
     let match = modulePattern.exec(installedModules);
     let userGlobals = {};
     let GLOBAL_NAME = 1;
@@ -356,8 +356,7 @@ let checkRvmInstallMacLinux = () => {
                 return semver.maxSatisfying(versions, packageGlobals.ruby);
             })
             .then(versionToInstall => {
-                let installRubyVersionCmd = getSystemCmd('rvm install ' + versionToInstall);
-                let installRuby = () => executeSystemCommand(installRubyVersionCmd, options)
+                let installRuby = () => executeSystemCommand(getSystemCmd('rvm install ' + versionToInstall), options)
                     .then(() => versionToInstall);
                 if (!rubyVersion) {
                     console.log('no version of ruby detected, installing version ' + versionToInstall + ' now');
@@ -451,8 +450,9 @@ let walkThroughjdkInstall = () => displayUserPrompt('go to the url http://www.or
 let installMavenOnHost = () => {
     let downloadPattern = (operatingSystem === 'win32') ? /http[^"]+maven-([0-9.]+)-bin\.zip/g : /http[^"]+maven-([0-9.]+)-bin\.tar\.gz/g;
     let unzippedFolderPath = (operatingSystem === 'win32') ?  'C:\\Program Files\\' : '/usr/local/';
-    const mavenUrl = 'https://maven.apache.org/download.cgi';
-    return getVersionsWithRequest(mavenUrl, downloadPattern, packageGlobals.maven)
+    let mavenUrl = 'https://maven.apache.org/download.cgi';
+    let mavenVersion;
+    return getVersionsWithRequest(mavenUrl, downloadPattern, packageGlobals.maven) // scrape the maven homepage to get version and download link
         .then(download => {
             let path = download.downloadHyperlink;
             console.log('downloading maven version from the following link:\n' + path);
@@ -460,9 +460,10 @@ let installMavenOnHost = () => {
             unzippedFolderPath += fileName.substring(0, fileName.indexOf(download.version) + download.version.length);
             let folderSeparator = (operatingSystem === 'win32') ? '\\' : '/';
             let downloadPath = os.homedir() + folderSeparator + 'Downloads' + folderSeparator + fileName;
+            mavenVersion = download.version;
             return downloadPackage(path, downloadPath);
         })
-        .then(downloadPath => {
+        .then(downloadPath => { // unzip the downloaded package
             let unzipCommand;
             if (operatingSystem === 'win32') {
                 unzipCommand = 'powershell.exe -command \"Add-Type -AssemblyName System.IO.Compression.FileSystem; ' +
@@ -472,8 +473,7 @@ let installMavenOnHost = () => {
             }
             return executeSystemCommand(unzipCommand, options);
         })
-        .then(() => {
-            //set up the environment variables
+        .then(() => { // set environment variables
             console.log('setting your maven system environment variables.');
             let outFile = (operatingSystem === 'darwin') ? '.bash_profile' : '.bashrc';
             let commandSeparator = (operatingSystem === 'win32') ? '; ' : ' && ';
@@ -489,15 +489,16 @@ let installMavenOnHost = () => {
             setAllPathVariables = (operatingSystem === 'win32') ? getSystemCmd(setAllPathVariables) : setAllPathVariables + commandSeparator + createSymbolicLinkToMaven;
             return executeSystemCommand(setAllPathVariables, options);
         })
-        .catch(error => {
+        .then(() => { // notify user of success
+            console.log('successfully installed maven version ' + mavenVersion);
+        })
+        .catch(error => { // notify user of failure and reason
             console.log('could not set environment variables at this time.');
             console.log(error);
         });
 };
-let convertToPowershellCommand = systemCommand => {
-    // this refreshes the environment path by default before each new command is issued.
-    return 'powershell.exe -command \"$env:Path = ' + getSystemEnvironmentVariableForWindows('Path') + '; ' + systemCommand + ';\"';
-};
+// refresh the path before running every command in powershell to handle full install
+let convertToPowershellCommand = systemCommand => 'powershell.exe -command \"$env:Path = ' + getSystemEnvironmentVariableForWindows('Path') + '; ' + systemCommand + ';\"';
 let convertToBashLoginCommand = systemCommand => 'bash -l -c \"' + systemCommand + '\"';
 let getSystemCmd = systemCommand => (operatingSystem === 'win32') ? convertToPowershellCommand(systemCommand) : convertToBashLoginCommand(systemCommand);
 let checkForGemUpdates = () => {
@@ -787,12 +788,11 @@ let runGruntPremerge = () => {
             console.log(error);
         });
 };
-let finishInstallWithMessage = () => {
-    console.log('For angular development, run command "grunt host". For aem development log into aem instance that is currently running.');
-    let endScript = () => {
-        process.exit(0);
-    };
-    setTimeout(endScript, 5 * seconds);
+let endProcessWithMessage = (message, delay, exitCode) => {
+    console.log(message);
+    setTimeout(() => {
+        process.exit(exitCode);
+    }, delay);
 };
 let fullInstall = () => {
     let systemState = {};
@@ -808,7 +808,7 @@ let fullInstall = () => {
         .then(() => installMaven())
         .then(() => runGruntPremerge())
         .then(() => installAemDependencies())
-        .then(() => finishInstallWithMessage());
+        .then(() => endProcessWithMessage('For angular development, run command "grunt host".\nFor AEM development, start the crx-quickstart server.', 5 * seconds, 0));
 };
 module.exports = {
     installNpmGlobals: installGlobalNpmDependencies,
