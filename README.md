@@ -1,8 +1,8 @@
-tmng-setup-tools
+webdev-setup-tools
 ================
 
 A small library of utility functions designed to setup necessary development
-tools for the TMNG team at T-Mobile. This package should be installed in the
+tools for the web. This package should be installed in the
 node modules folder located in the root of the project folder (where the .git folder is located).
 It determines the packages to install from the "globals" field in the package.json in the project root (one folder up).
 
@@ -18,7 +18,7 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ## Installation
 
-  npm install https://github.com/cdejarlais/tmng-setup-tools.git --save
+  npm install https://github.com/cdejarlais/webdev-setup-tools.git --save
 
 ## Usage
   **Note:** The commands below can be pasted directly into a administrative command prompt window for Windows
@@ -26,33 +26,33 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
   install/update all required npm globals
   ```sh
-    node -e "require('tmng-setup-tools').installNpmGlobals()"
+  require('webdev-setup-tools').installNpmGlobals()
   ```
   install ruby and configure environment variables
   ```sh
-  node -e "require('tmng-setup-tools').installRuby()"
+  require('webdev-setup-tools').installRuby()
   ```
   download and install all required aem dependencies
   ```sh
-    node -e "require('tmng-setup-tools').installAem()"
+  require('webdev-setup-tools').installAem()
   ```
   install/update all required ruby gems
   ```sh
-    node -e "require('tmng-setup-tools').installGems()"
+  require('webdev-setup-tools').installGems()
   ```
   walk user through installation and path setup of java jdk
   ```sh
-    node -e "require('tmng-setup-tools').installJava()"
+  require('webdev-setup-tools').installJava()
   ```
   install maven and configure environment variables
   ```sh
-  node -e "require('tmng-setup-tools').installMaven()"
+  require('webdev-setup-tools').installMaven()
   ```
   Full system install. Downloads, installs, and configures Ruby, Ruby gems, Npm globals, Java,
   Maven, and all AEM packages. In addition, runs a yarn install to install package.json dependencies in the angular-ui folder, performs an update of webdriver
   in the angular-ui folder, runs a grunt pre-merge for the angular-ui folder and performs a mvn clean install for the t-mobile folder.
   ```sh
-  node -e "require('tmng-setup-tools').installEverything()"
+  require('webdev-setup-tools').installEverything()
   ```
 
 
