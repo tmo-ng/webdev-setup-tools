@@ -2,7 +2,7 @@
   "main": "setup.js",
   "name": "webdev-setup-tools",
   "version": "0.1.0",
-  "description": "Setup necessary for many web development tasks",
+  "description": "Setup and install packackes required for many web development tasks",
   "repository": {
     "type": "git",
     "url": "https://github.com/cdejarlais/webdev-setup-tools.git"
