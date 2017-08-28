@@ -313,30 +313,28 @@ let checkRubyInstallWindows = () => {
         });
 };
 let checkRvmInstallMacLinux = () => {
-    const rvmInstallMacLinux = 'curl -sSL https://get.rvm.io | bash -s -- --ignore-dotfiles';
-    const rvmGetAllRemoteRubyVersions = convertToBashLoginCommand('rvm list known');
-    const rvmGetAllLocalRubyVersions = convertToBashLoginCommand('rvm list');
-    const rvmSetLocalRubyDefault = 'rvm --default use ';
-    let checkForExistingRvm = getSystemCmd('which rvm');
+    let installRvmForMacLinux = 'curl -sSL https://get.rvm.io | bash -s -- --ignore-dotfiles';
+    let rvmGetAllRemoteRubyVersions = convertToBashLoginCommand('rvm list known');
+    let rvmGetAllLocalRubyVersions = convertToBashLoginCommand('rvm list');
+    let rvmSetLocalRubyDefault = 'rvm --default use ';
+    let checkForExistingRvm = convertToBashLoginCommand('which rvm');
+    let localRubyVersion;
     return executeSystemCommand(checkForExistingRvm, {resolve: options.resolve})
         .catch(() => {
             console.log('no version of rvm is installed on this computer');
         })
-        .then(rvmVersion => {
+        .then(rvmVersion => { // install rvm
             if (!rvmVersion) {
                 console.log('installing rvm now');
-                return executeSystemCommand(rvmInstallMacLinux, options)
-                    .then(() => {
+                return executeSystemCommand(installRvmForMacLinux, options)
+                    .then(() => { // update environment variables
                         let outFile = (operatingSystem === 'darwin') ? '/.bash_profile' : '/.bashrc';
                         return executeSystemCommand('echo "[ -s \\"\\$HOME/.rvm/scripts/rvm\\" ] && \\. \\"\\$HOME/.rvm/scripts/rvm\\"" >> ' + os.homedir() + outFile, options)
                             .then(() => executeSystemCommand('echo "export PATH=\\"\\$PATH:\\$HOME/.rvm/bin\\"" >> ' + os.homedir() + outFile, options));
                     });
             }
         })
-        .catch(e => {
-            console.log(e);
-        })
-        .then(() => {
+        .then(() => { // find highest local version of ruby installed
             let getLocalRubyOptions = {
                 resolve: (resolve, data) => {
                     let versions = data.match(versionPattern);
@@ -346,37 +344,45 @@ let checkRvmInstallMacLinux = () => {
             };
             return executeSystemCommand(rvmGetAllLocalRubyVersions, getLocalRubyOptions);
         })
-        .then(rubyVersion => executeSystemCommand(rvmGetAllRemoteRubyVersions, {resolve: options.resolve})
-            .then(allVersions => {
-                let rvmRubyPattern = /\[ruby-]([.0-9]+)\[([.0-9-a-z]+)]/g;
-                let match = rvmRubyPattern.exec(allVersions);
-                let versions = [];
-                while (match !== null) {
-                    versions.push(match[1] + match[2]);
-                    match = rvmRubyPattern.exec(allVersions);
-                }
-                return semver.maxSatisfying(versions, packageGlobals.ruby);
-            })
-            .then(versionToInstall => {
-                let installRuby = () => executeSystemCommand(getSystemCmd('rvm install ' + versionToInstall), options)
+        .then(rubyVersion => { // get all remote versions of ruby
+            localRubyVersion = rubyVersion;
+            return executeSystemCommand(rvmGetAllRemoteRubyVersions, {resolve: options.resolve})
+        })
+        .then(allVersions => { // get the highest compatible version of ruby from remote
+            let rvmRubyPattern = /\[ruby-]([.0-9]+)\[([.0-9-a-z]+)]/g;
+            let match = rvmRubyPattern.exec(allVersions);
+            let versions = [];
+            while (match !== null) {
+                versions.push(match[1] + match[2]);
+                match = rvmRubyPattern.exec(allVersions);
+            }
+            return semver.maxSatisfying(versions, packageGlobals.ruby);
+        })
+        .then(versionToInstall => { // install highest compatible version of ruby
+            let installRuby = () => {
+                return executeSystemCommand(getSystemCmd('rvm install ' + versionToInstall), options)
                     .then(() => versionToInstall);
-                if (!rubyVersion) {
-                    console.log('no version of ruby detected, installing version ' + versionToInstall + ' now');
-                    return installRuby();
-                } else if (semver.lt(rubyVersion, versionToInstall)) {
-                    console.log('a newer version of ruby, version ' + versionToInstall + ' is available.');
-                    return confirmOptionalInstallation('do you want to install this optional ruby update now (y/n)?  ', () => installRuby());
-                } else {
-                    console.log(rubyVersion + ' satisfies package requirements');
-                    return rubyVersion;
-                }
-            }))
-        .then(rubyVersion => executeSystemCommand(convertToBashLoginCommand(rvmSetLocalRubyDefault + rubyVersion), options)
-            .catch(e => {
-                console.log(e);
-            }).then(() => {
-                console.log('ruby install complete. default version is now ' + rubyVersion + '.');
-            }));
+            };
+            if (!localRubyVersion) {
+                console.log('no version of ruby detected, installing version ' + versionToInstall + ' now');
+                return installRuby();
+            } else if (semver.lt(localRubyVersion, versionToInstall)) {
+                console.log('a newer version of ruby, version ' + versionToInstall + ' is available.');
+                return confirmOptionalInstallation('do you want to install this optional ruby update now (y/n)?  ', () => installRuby());
+            } else {
+                console.log(localRubyVersion + ' satisfies package requirements');
+                return localRubyVersion;
+            }
+        })
+        .then(rubyVersion => { // set the new version as default
+            return executeSystemCommand(convertToBashLoginCommand(rvmSetLocalRubyDefault + rubyVersion), options)
+                .then(() => {
+                    console.log('ruby install complete. default version is now ' + rubyVersion + '.');
+                });
+        })
+        .catch(error => { // handle failure
+            console.log('ruby install failed with the following message:\n' + error);
+        });
 };
 let displayUserPrompt = displayPrompt => new Promise((resolve) => {
     const rl = readline.createInterface({
@@ -389,65 +395,55 @@ let displayUserPrompt = displayPrompt => new Promise((resolve) => {
         rl.close();
     });
 });
-let walkThroughjdkInstall = () => displayUserPrompt('go to the url http://www.oracle.com/technetwork/java/javase/downloads/')
-    .then(() => displayUserPrompt('click on the jdk download link'))
-    .then(() => displayUserPrompt('click on the accept license agreement button, then download the version matching your operating system.'))
-    .then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('accept the default installation path and default tools.');
-        }
-    })
-    .then(() => displayUserPrompt('after downloading, you will need to first unzip this folder, then add this location to your system path.')).then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('type "environment variables" into your start button menu or search bar and click enter.');
-        } else {
-            return displayUserPrompt('press ctrl + alt + t to launch a terminal');
-        }
-    })
-    .then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('click on "environment variables".');
-        } else {
-            return displayUserPrompt('type nano (any text editor will work) /etc/environment and press enter');
-        }
-    })
-    .then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('in the lower window marked "system variables" you should see a variable marked "Path". Click on this value to modify it.');
-        } else {
-            return displayUserPrompt('scroll to the end of the file and enter the following:\nJAVA_HOME=/usr/lib/jvm/{your java version here}\nexport JAVA_HOME\nSave the file and exit. ' +
-                'reload the system path by pressing . /etc/environment or close the terminal.');
-        }
-    }).then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('click on the button labeled "New". A blank entry should pop up at the bottom.');
-        }
-    })
-    .then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('paste the path to your java sdk in this box. typically, this path is of ' +
-                'the form\nC:\\Program Files\\Java\\jdk1.8.0_141\\bin, but this is unique to each installation.');
-        }
-    })
-    .then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('Next, you will need to add a System Variable for "JAVA_HOME". Click new under the box for system variables.\nA box should pop up with values ' +
-                'for the variable name and the value. Enter "JAVA_HOME" as the name.\nEnter C:\\Program Files\\Java\\jdk1.8.0_141, or the path to your unique java jdk folder.');
-        }
-    }).then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('open a new terminal then type "javac -v". If this was done correctly, you should see output like "javac 1.8.0_141". Java is now ');
-        }
-    })
-    .then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('click ok then close for each open screen');
-        }
-    }).then(() => {
-        if (operatingSystem === 'win32') {
-            return displayUserPrompt('open a new terminal then type "javac -v". If this was done correctly, you should see output like "javac 1.8.0_141". Java is now ');
-        }
-    });
+let walkThroughjdkInstall = () => {
+    return displayUserPrompt('This prompt was developed to walk a user through\nthe installation and setup of the official oracle java jdk.' +
+        '\nWhen a step has been completed, press enter to continue to the next step.\nPlease press enter to begin.')
+        .then(() => displayUserPrompt('go to the url http://www.oracle.com/technetwork/java/javase/downloads'))
+        .then(() => displayUserPrompt('click on the jdk download link to be redirected to the download page for all systems.'))
+        .then(() => displayUserPrompt('accept the license agreement, then download the version matching your operating system.' +
+            '\nFor most Apple OSX users, this auto configures your path, so you can ignore the subsequent steps.'))
+        .then(() => {
+            if (operatingSystem === 'win32') {
+                return displayUserPrompt('accept the default path and tools for your new java installation.');
+            }
+        })
+        .then(() => displayUserPrompt('after the download, you will need to first unzip this folder,\nthen add this location to your system path.'))
+        .then(() => {
+            let displayPrompt = (operatingSystem === 'win32') ? 'type "environment variables" into your start button menu or search bar and click enter.' : 'press ctrl + alt + t to launch a terminal';
+            return displayUserPrompt(displayPrompt);
+        })
+        .then(() => {
+            let displayPrompt = (operatingSystem === 'win32') ? 'click on the "environment variables" button near the bottom.' : 'type nano (or your text editor of choice) ~/.bash_profile (.bashrc, .bash_profile, .zshrc, etc.) and press enter';
+            return displayUserPrompt(displayPrompt);
+        })
+        .then(() => {
+            let displayPrompt = (operatingSystem === 'win32') ? 'in the lower window marked "system variables" you should see a variable marked "Path".\nClick on this value to modify it.' :
+                'Scroll to the end of the file. If java has not been added to your environment, you can add it with the followind:\nJAVA_HOME=/usr/lib/jvm/{your java version here}\nexport JAVA_HOME\nSave the file and exit. ' +
+                'reload the system path by pressing . /etc/environment or close the terminal.';
+            return displayUserPrompt(displayPrompt);
+        }).then(() => {
+            if (operatingSystem === 'win32') {
+                return displayUserPrompt('click on the button labeled "New", or double click on "Path"');
+            }
+        })
+        .then(() => {
+            if (operatingSystem === 'win32') {
+                return displayUserPrompt('paste the path to your java sdk in this box. typically, this path is of ' +
+                    'the form\nC:\\Program Files\\Java\\jdk1.8.0_141\\bin, but this is unique to each installation.');
+            }
+        })
+        .then(() => {
+            if (operatingSystem === 'win32') {
+                return displayUserPrompt('Next, you will need to add a System Variable for "JAVA_HOME".\nClick new under the box for system variables.\nA box should pop up with values ' +
+                    'for the variable name and the value. Enter "JAVA_HOME" as the name.\nFor the value, Enter "C:\\Program Files\\Java\\jdk1.8.0_141", but this is unique to each installation.');
+            }
+        }).then(() => {
+            return displayUserPrompt('open a new terminal then type "javac -v".\nIf this was done correctly, you should see output like "javac 1.8.0_141".');
+        })
+        .then(() => {
+            return displayUserPrompt('This concludes the java jdk setup.');
+        });
+};
 
 let installMavenOnHost = () => {
     let downloadPattern = (operatingSystem === 'win32') ? /http[^"]+maven-([0-9.]+)-bin\.zip/g : /http[^"]+maven-([0-9.]+)-bin\.tar\.gz/g;
