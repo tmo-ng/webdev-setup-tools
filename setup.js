@@ -13,6 +13,8 @@ const findPortProcessWindows = 'netstat -a -n -o | findstr :4502';
 const findPortProcessOsxLinux = 'lsof -i TCP:4502';
 const seconds = 1000;
 const minutes = 60 * seconds;
+const projectRoot = 2;
+const projectRootUpOne = 3;
 const options = {
     resolve: (resolve, data) => {
         resolve(data);
@@ -612,17 +614,17 @@ let stopAemProcess = () => {
 let getSystemEnvironmentVariableForWindows = variableName => '[Environment]::GetEnvironmentVariable(\'' + variableName + '\', \'Machine\')';
 let setSystemEnvironmentVariable = (variableName, variableValue) => '[Environment]::SetEnvironmentVariable(\'' + variableName + '\', ' + variableValue + ', \'Machine\')';
 let mavenCleanAndAutoInstall = (commandSeparator, folderSeparator) => {
-    let outFile = goUpDirectories(2) + 'AEM' + folderSeparator + 'mvnOutput.log';
+    let outFile = goUpDirectories(projectRootUpOne) + 'AEM' + folderSeparator + 'mvnOutput.log';
 
     //need to check whether JAVA_HOME has been set here for windows machines, if not, this can be executed with the command below
     let runMavenCleanInstall = (operatingSystem === 'win32' && !process.env.JAVA_HOME) ? '$env:JAVA_HOME = ' + getSystemEnvironmentVariableForWindows('JAVA_HOME') + commandSeparator : '';
-    runMavenCleanInstall += 'cd ' + goUpDirectories(1) + 't-mobile' + commandSeparator + 'mvn clean install \-PautoInstallPackage > ' + outFile;
+    runMavenCleanInstall += 'cd ' + goUpDirectories(projectRoot) + 't-mobile' + commandSeparator + 'mvn clean install \-PautoInstallPackage > ' + outFile;
 
     console.log('running mvn clean and auto package install.\nOutput is being sent to the file ' + outFile);
     return executeSystemCommand(getSystemCmd(runMavenCleanInstall), options);
 };
 let copyNodeFile = folderSeparator => () => {
-    let nodeFolderPath = goUpDirectories(1) + 't-mobile' + folderSeparator + 'node';
+    let nodeFolderPath = goUpDirectories(projectRoot) + 't-mobile' + folderSeparator + 'node';
     console.log('copying node file into ' + nodeFolderPath);
     return executeSystemCommand('mkdir ' + nodeFolderPath, options)
         .then(() => {
@@ -634,7 +636,7 @@ let copyNodeFile = folderSeparator => () => {
 };
 let startAemServer = (commandSeparator, jarName) =>{
     console.log('starting jar file AEM folder.');
-    let startServer = 'cd ' + goUpDirectories(2) + 'AEM' + commandSeparator;
+    let startServer = 'cd ' + goUpDirectories(projectRootUpOne) + 'AEM' + commandSeparator;
     startServer += (operatingSystem === 'win32') ? 'Start-Process java -ArgumentList \'-jar\', \'' + jarName + '\'' : 'java -jar ' + jarName + ' &';
     executeSystemCommand(getSystemCmd(startServer), options);
 };
@@ -647,7 +649,7 @@ let downloadAllAemFiles = folderSeparator => () => {
 let aemInstallationProcedure = () => {
     let folderSeparator = (operatingSystem === 'win32') ? '\\' : '/';
     let commandSeparator = (operatingSystem === 'win32') ? '; ' : ' && ';
-    let aemFolderPath = goUpDirectories(2) + 'AEM';
+    let aemFolderPath = goUpDirectories(projectRootUpOne) + 'AEM';
     let downloadFile = (dependency, globalPackage) => {
         return downloadPackage(globalPackage[dependency], aemFolderPath + folderSeparator + dependency)
             .then(() => dependency);
@@ -742,7 +744,7 @@ let installMaven = () => {
 };
 let installAngularUiDependenciesWithYarn = () => {
     console.log('installing npm dependencies in angular-ui project folder.');
-    let installAngularUiYarn = 'cd ' + goUpDirectories(1) + 'angular-ui';
+    let installAngularUiYarn = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
     installAngularUiYarn += (operatingSystem === 'win32') ? ';' + getNpmPathOnWindows() + '\\yarn.cmd install' : ' && yarn install';
     return executeSystemCommand(getSystemCmd(installAngularUiYarn), options)
         .catch(error => {
@@ -753,7 +755,7 @@ let installAngularUiDependenciesWithYarn = () => {
 let updateWebdriver = (angularUiSuccess) => {
     if (angularUiSuccess) {
         console.log('updating webdriver in angular-ui project folder.');
-        let updateWebDriver = 'cd ' + goUpDirectories(1) + 'angular-ui';
+        let updateWebDriver = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
         updateWebDriver += (operatingSystem === 'win32') ? '; npm run update-webdriver' : ' && npm run update-webdriver';
         return executeSystemCommand(getSystemCmd(updateWebDriver), options)
             .catch(error => {
@@ -777,7 +779,7 @@ let runGruntPremerge = () => {
         resolve(data);
     };
 
-    let gruntCmd = 'cd ' + goUpDirectories(1) + 'angular-ui';
+    let gruntCmd = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
 
     // handle older versions of windows that do not source npm cmd's correctly
     gruntCmd += (operatingSystem === 'win32') ? ';' + getNpmPathOnWindows() + '\\grunt.cmd pre-merge' : ' && grunt pre-merge';
