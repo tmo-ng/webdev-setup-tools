@@ -581,13 +581,13 @@ let uploadAndInstallAllAemPackages = folderSeparator => {
             request.post({url: crxInstallUrl, formData: formData}, (err, httpResponse, body) => {
                 if (err) {
                     console.log('upload and install failed with the following message:\n' + err);
-                    setTimeout(waitForEstablishedConnection, 3 * seconds);
+                    setTimeout(waitForEstablishedConnection, 5 * seconds);
                 } else if (httpResponse.statusCode === 200) {
                     console.log('Upload successful!  Server responded with:', body);
                     resolve(body);
                 } else {
                     console.log('Upload failed,  Server responded with:', body);
-                    setTimeout(waitForEstablishedConnection, 3 * seconds);
+                    setTimeout(waitForEstablishedConnection, 5 * seconds);
                 }
             });
         })();
