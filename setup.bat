@@ -5,8 +5,8 @@ set latestNodeVersion=""
 set downloadsFolder=%userprofile%\Downloads\
 set npmCmd=npm
 set powershellVersion=""
-for /f "tokens=*" %%i in ('powershell.exe -command "$output = Get-Host | Select-Object Version; $output -match '[3-9].0'"') do (
-  set powershellVersion=%%i
+for /f "tokens=*" %%i in ('powershell.exe -command "$output = Get-Host | Select-Object Version; $output -match '[3-9]'"') do (
+    set powershellVersion=%%i
 )
 if !powershellVersion! == False (
     set /p missingPrompt=This program requires powershell version 3.0 or higher.
@@ -15,14 +15,14 @@ if !powershellVersion! == False (
 )
 set /p missingPrompt=This program must be run with administrative privileges.
 for /f "tokens=*" %%i in ('node -v 2^>nul') do (
-  set userNodeVersion=%%i
+    set userNodeVersion=%%i
 )
 for /f "tokens=*" %%i in ('powershell -command "& { . .\nodeInstallerScript.ps1; FindMostRecentVersion }"') do (
-  set latestNodeVersion=%%i
+    set latestNodeVersion=%%i
 )
 if !userNodeVersion! == "" (
-  call :InstallNode
-  exit /b 0
+    call :InstallNode
+    exit /b 0
 )
 call :ValidateNode
 exit /b 0
@@ -31,10 +31,10 @@ exit /b 0
 set notCompatible=""
 set nodePath=""
 for /f "tokens=*" %%i in ('node -e "console.log(require('semver').outside('!userNodeVersion:~1!', require('./package.json').globals.engines.node, '<'))"') do (
-  set notCompatible=%%i
+    set notCompatible=%%i
 )
 for /f "tokens=*" %%i in ('where node.exe') do (
-  set nodePath=%%i
+    set nodePath=%%i
 )
 if !notCompatible! == true (
     echo local node version !userNodeVersion! is out of date, updating now
@@ -58,13 +58,13 @@ powershell.exe -command "$client = New-Object System.Net.WebClient;$client.Heade
 msiexec /qn /l* C:\node-log.txt /i !downloadsFolder!node-!latestNodeVersion!-x64.msi
 set userNodeVersion=!latestNodeVersion!
 echo node was installed with version !latestNodeVersion!
-cd ../ && powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); npm install --scripts-prepend-node-path=true;" && call :StartNodeScript
+cd ../../ && powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); npm install --scripts-prepend-node-path=true;" && call :StartNodeScript
 exit /b 0
 
 :ValidateNode
-cd ../ && npm install --scripts-prepend-node-path=true && call :CheckNodeCompatibility
+cd ../../ && npm install --scripts-prepend-node-path=true && call :CheckNodeCompatibility
 exit /b 0
 
 :StartNodeScript
-powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); node -e \"require('./setup.js').installEverything()\";"
+powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); node -e \"require('./node_modules/webdev-setup-tools/setup.js').installEverything()\";"
 exit /b 0
