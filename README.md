@@ -22,7 +22,7 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 ## Setup Scripts
 Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included at the root of the npm package.
 
-**setup.sh:** To launch setup.sh in a terminal window, navigate to the webdev-setup-tools installation directory in the node_modules folder, and enter the following commands:
+**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools folder in a terminal window, and enter the following commands:
   ```sh
   chmod 755 setup.sh
   ./setup.sh
@@ -33,7 +33,7 @@ When an update becomes available, it will prompt the user for confirmation, then
 
 
 
-**setup.bat:** To launch setup.bat from a command prompt with administrative priveleges, go to the webdev-setup-tools installation directory in the node_modules folder, and enter the following command:
+**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools folder in a command prompt with administrative priveleges, and enter the following command:
 ```sh
 setup.bat
 ```
