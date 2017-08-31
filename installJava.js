@@ -7,12 +7,12 @@ const options = setup.getOptions();
 const versionPattern = setup.getVersionPattern();
 const requiredJavaVersion = setup.getProjectGlobals('engines')['java'];
 let walkThroughjdkInstall = () => {
-    return setup.displayUserPrompt('This prompt was developed to walk a user through\nthe installation and setup of the official oracle java jdk.' +
+    return setup.displayUserPrompt('This prompt will walk you through\nthe installation and setup of the official oracle java jdk.' +
         '\nWhen a step has been completed, press enter to continue to the next step.\nPlease press enter to begin.')
         .then(() => setup.displayUserPrompt('go to the url http://www.oracle.com/technetwork/java/javase/downloads'))
         .then(() => setup.displayUserPrompt('click on the jdk download link to be redirected to the download page for all systems.'))
         .then(() => setup.displayUserPrompt('accept the license agreement, then download the version matching your operating system.' +
-            '\nFor most Apple OSX users, this auto configures your path, so you can ignore the subsequent steps.'))
+            '\nFor most Apple OSX configurations, this auto configures your path, so you can ignore the subsequent steps.'))
         .then(() => {
             if (operatingSystem === 'win32') {
                 return setup.displayUserPrompt('accept the default path and tools for your new java installation.');
