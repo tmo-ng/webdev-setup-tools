@@ -9,12 +9,7 @@ const fs = require('fs');
 const versionPattern = /([0-9]+(?:\.[0-9]+)+)/g;
 const readline = require('readline');
 const scriptsDirectory = __dirname;
-const findPortProcessWindows = 'netstat -a -n -o | findstr :4502';
-const findPortProcessOsxLinux = 'lsof -i TCP:4502';
-const seconds = 1000;
-const minutes = 60 * seconds;
 const projectRoot = 2;
-const projectRootUpOne = 3;
 const options = {
     resolve: (resolve, data) => {
         resolve(data);
@@ -23,11 +18,27 @@ const options = {
         process.stdout.write(data);
     }
 };
-let findRequiredAndOptionalUpdates = (userGlobals, projectGlobals, highestVersion) => {
+let getOperatingSystem  = () => operatingSystem;
+let getOptions  = () => options;
+let getVersionPattern  = () => versionPattern;
+let getProjectGlobals  = (packageName) => {
+    return packageGlobals[packageName];
+};
+let getHomeDirectory  = () => os.homedir();
+let getMaxCompatibleVersion = (arrayOfVersions, globalVersion) => {
+    return semver.maxSatisfying(arrayOfVersions, globalVersion);
+};
+let isPackageCompatible = (version, range) => {
+    return !semver.outside(version, range, '<');
+};
+// userGlobals - object mapping packages to versions
+// projectGlobals - global object listed in package.json at root
+// packageArray - array of module objects with name and highestCompatibleVersion properties
+let findRequiredAndOptionalUpdates = (userGlobals, projectGlobals, packageArray) => {
     let optionalInstall = [];
     let requiredInstall = [];
-    for (let index = 0; index < highestVersion.length; index++) {
-        let module = highestVersion[index];
+    for (let index = 0; index < packageArray.length; index++) {
+        let module = packageArray[index];
         if (!userGlobals[module.name]) { // install nonexistent
             console.log('missing required project package ' + module.name + '.');
             requiredInstall.push(module);
@@ -40,6 +51,7 @@ let findRequiredAndOptionalUpdates = (userGlobals, projectGlobals, highestVersio
     }
     return {required: requiredInstall, optional: optionalInstall};
 };
+
 let runListOfPromises  = (projectGlobals, promise) => {
     let promises = [];
     Object.keys(projectGlobals).forEach(dependency => {
@@ -51,6 +63,7 @@ let runListOfPromises  = (projectGlobals, promise) => {
         return error;
     });
 };
+
 let getInstallationCommand = (packages, command, separator) => {
     let installCommand = command;
     for (let index = 0; index < packages.length; index++) {
@@ -58,6 +71,7 @@ let getInstallationCommand = (packages, command, separator) => {
     }
     return installCommand;
 };
+
 let handleUnresponsiveSystem = (delayTime, delayMessage) => {
     return new Promise((resolve) => {
         (function waitForSystemResponse() {
@@ -74,6 +88,7 @@ let handleUnresponsiveSystem = (delayTime, delayMessage) => {
         })();
     });
 };
+
 let executeSystemCommand = (commandToExecute, outputOptions) => {
     return new Promise((resolve, reject) => {
         let systemCommand = exec(commandToExecute, {maxBuffer: 1024 * 500}, (error, osResponse, stderr) => {
@@ -101,6 +116,7 @@ let executeSystemCommand = (commandToExecute, outputOptions) => {
         }
     });
 };
+
 let findHighestCompatibleVersion = (globalPackage, projectGlobals, listVersionsCommand) => { // get highest version from terminal or prompt output
     const nodeVersionPattern = /([0-9]+(?:\.[0-9-a-z]+)+)/g;
     let matchVersionsOptions = {
@@ -131,6 +147,7 @@ let confirmOptionalInstallation = (displayPrompt, installCallback) => {
             }
         });
 };
+
 let getAllUserGlobals = (installedModules, modulePattern) => { // return a map of all modules user has installed
     let match = modulePattern.exec(installedModules);
     let userGlobals = {};
@@ -142,6 +159,7 @@ let getAllUserGlobals = (installedModules, modulePattern) => { // return a map o
     }
     return userGlobals;
 };
+
 let findUserGlobals = (listGlobalsCommand, getGlobals) => {
     let findGlobalsOptions = {
         resolve: (resolve, data) => {
@@ -150,80 +168,13 @@ let findUserGlobals = (listGlobalsCommand, getGlobals) => {
     };
     return executeSystemCommand(listGlobalsCommand, findGlobalsOptions);
 };
+
 let listOptionals = optionalPackages => {
     for (let index = 0; index < optionalPackages.length; index++) {
         console.log(optionalPackages[index].name);
     }
 };
-let installGlobalNpmDependencies = () => {
-    let userState = {};
-    let findVersion = (dependency, projectGlobals) => {
-        let getNpmPackageVersions = getSystemCmd('npm info ' + dependency + ' versions --json');
-        return findHighestCompatibleVersion(dependency, projectGlobals, getNpmPackageVersions);
-    };
-    let getGlobals = modules => {
-        return getAllUserGlobals(modules, /([a-z-A-Z]+)@([0-9]+(?:\.[0-9-a-z]+)+)/g);
-    };
-    const npmListUserGlobals = getSystemCmd('npm ls -g');
-    const npmInstallModuleAsGlobal = 'npm install -g';
-    console.log('getting installed node modules.');
-    return findUserGlobals(npmListUserGlobals, getGlobals)
-        .catch(error => { // this will catch if the user has unmet dependencies on existing npm packages
-            console.log(error);
-        })
-        .then(userGlobals => {
-            userState.userGlobals = userGlobals;
-            if (operatingSystem === 'win32') { // flag for additional install requirements
-                userState.windows = {};
-                return runListOfPromises(packageGlobals.windows, findVersion)
-                    .then(windowsPackages => {
-                        let windowsUpdates = findRequiredAndOptionalUpdates(userGlobals, packageGlobals.windows, windowsPackages);
-                        userState.windows.required = windowsUpdates.required;
-                        userState.windows.optional = windowsUpdates.optional;
-                        if (userState.windows.required.length > 0) {
-                            console.log('installing required windows packages.');
-                            return Promise.race([executeSystemCommand(getSystemCmd(getInstallationCommand(userState.windows.required, npmInstallModuleAsGlobal, '@')), { resolve: options.resolve }),
-                                handleUnresponsiveSystem(2 * minutes, 'The system is not responding.\ndo you want to keep waiting (y/n)?  ')]);
-                        }
-                    })
-            }
-        })
-        .then(() => runListOfPromises(packageGlobals.npm, findVersion)
-            .then(npmPackages => {
-                userState.npm = {};
-                let npmUpdates = findRequiredAndOptionalUpdates(userState.userGlobals, packageGlobals.npm, npmPackages);
-                userState.npm.required = npmUpdates.required;
-                userState.npm.optional = npmUpdates.optional;
-                if (userState.npm.required.length > 0) {
-                    console.log('installing required npm packages.');
-                    return executeSystemCommand(getSystemCmd(getInstallationCommand(userState.npm.required, npmInstallModuleAsGlobal, '@')), options);
-                }
-            }))
-        .then(() => {
-            if (userState.windows && userState.windows.optional.length > 0) {
-                console.log('windows updates exist for the following packages: ');
-                listOptionals(userState.windows.optional);
-                return confirmOptionalInstallation('do you want to install these optional windows updates now (y/n)?  ',
-                    () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.windows.optional, npmInstallModuleAsGlobal, '@')), options));
-            }
 
-        })
-        .then(() => {
-            if (userState.npm.optional.length > 0) {
-                console.log('npm updates exist for the following packages: ');
-                listOptionals(userState.npm.optional);
-                return confirmOptionalInstallation('do you want to install these optional npm updates now (y/n)?  ',
-                    () => executeSystemCommand(getSystemCmd(getInstallationCommand(userState.npm.optional, npmInstallModuleAsGlobal, '@')), options));
-            }
-        })
-        .then(() => {
-            console.log('all npm packages are up to date.');
-            return userState;
-        })
-        .catch(error => {
-            console.error('Failed!', error);
-        });
-};
 let getVersionsWithRequest = (productUrl, hyperlinkPattern, range) => {
     return new Promise((resolve, reject) => {
         request({
@@ -269,121 +220,7 @@ let downloadPackage = (hyperlink, downloadPath) => {
         });
     });
 };
-let checkRubyInstallWindows = () => {
-    let rubyUrlWindows = 'https://rubyinstaller.org/downloads/archives/';
-    let rubyHyperlinkPattern = /https[^"]+rubyinstaller-([0-9.]+)[0-9-p]*x64.exe/g;
-    let getRubyVersion = getSystemCmd('ruby -v');
-    return executeSystemCommand(getRubyVersion, {resolve: options.resolve})
-        .catch(() => {
-            console.log('no version of ruby is installed on this computer');
-        })
-        .then(rubyVersion => {
-            if (rubyVersion) {
-                return rubyVersion.match(versionPattern)[0];
-            }
-        })
-        .then(localRubyVersion => {
-            return getVersionsWithRequest(rubyUrlWindows, rubyHyperlinkPattern, packageGlobals.ruby)
-                .then(remoteRubyVersion => {
-                    let installRuby = () => {
-                        let path = remoteRubyVersion.downloadHyperlink;
-                        let rubyDownloadPath = process.env.USERPROFILE + '\\Downloads\\' +
-                            path.substring(path.lastIndexOf('/') + 1, path.length);
-                        return downloadPackage(path, rubyDownloadPath)
-                            .then(rubyFilePath => {
-                                let startRubyInstall = rubyFilePath + ' /verysilent /tasks="modpath"';
-                                return executeSystemCommand(startRubyInstall, options);
-                            });
-                    };
-                    if (!localRubyVersion || semver.outside(localRubyVersion, packageGlobals.ruby, '<')) {
-                        if (localRubyVersion) {
-                            console.log('local ruby version is ' + localRubyVersion + ' package requires ' + packageGlobals.ruby);
-                        }
-                        console.log('installing ruby now');
-                        return installRuby();
-                    } else {
-                        if (semver.gt(remoteRubyVersion.version, localRubyVersion)) {
-                            console.log('a newer version of ruby, version ' + remoteRubyVersion.version + ' is now available.');
-                            return confirmOptionalInstallation('do you want to install this optional ruby upgrade now (y/n)?  ', () => installRuby());
-                        } else {
-                            console.log('local ruby version ' + localRubyVersion + ' is up to date.');
-                        }
-                    }
-                });
-        });
-};
-let checkRvmInstallMacLinux = () => {
-    let installRvmForMacLinux = 'curl -sSL https://get.rvm.io | bash -s -- --ignore-dotfiles';
-    let rvmGetAllRemoteRubyVersions = convertToBashLoginCommand('rvm list known');
-    let rvmGetAllLocalRubyVersions = convertToBashLoginCommand('rvm list');
-    let rvmSetLocalRubyDefault = 'rvm --default use ';
-    let checkForExistingRvm = convertToBashLoginCommand('which rvm');
-    let localRubyVersion;
-    return executeSystemCommand(checkForExistingRvm, {resolve: options.resolve})
-        .catch(() => {
-            console.log('no version of rvm is installed on this computer');
-        })
-        .then(rvmVersion => { // install rvm
-            if (!rvmVersion) {
-                console.log('installing rvm now');
-                return executeSystemCommand(installRvmForMacLinux, options)
-                    .then(() => { // update environment variables
-                        let outFile = (operatingSystem === 'darwin') ? '/.bash_profile' : '/.bashrc';
-                        return executeSystemCommand('echo "[ -s \\"\\$HOME/.rvm/scripts/rvm\\" ] && \\. \\"\\$HOME/.rvm/scripts/rvm\\"" >> ' + os.homedir() + outFile, options)
-                            .then(() => executeSystemCommand('echo "export PATH=\\"\\$PATH:\\$HOME/.rvm/bin\\"" >> ' + os.homedir() + outFile, options));
-                    });
-            }
-        })
-        .then(() => { // find highest local version of ruby installed
-            let getLocalRubyOptions = {
-                resolve: (resolve, data) => {
-                    let versions = data.match(versionPattern);
-                    let returnValue = (versions) ? semver.maxSatisfying(versions, packageGlobals.ruby) : versions;
-                    resolve(returnValue);
-                }
-            };
-            return executeSystemCommand(rvmGetAllLocalRubyVersions, getLocalRubyOptions);
-        })
-        .then(rubyVersion => { // get all remote versions of ruby
-            localRubyVersion = rubyVersion;
-            return executeSystemCommand(rvmGetAllRemoteRubyVersions, {resolve: options.resolve})
-        })
-        .then(allVersions => { // get the highest compatible version of ruby from remote
-            let rvmRubyPattern = /\[ruby-]([.0-9]+)\[([.0-9-a-z]+)]/g;
-            let match = rvmRubyPattern.exec(allVersions);
-            let versions = [];
-            while (match !== null) {
-                versions.push(match[1] + match[2]);
-                match = rvmRubyPattern.exec(allVersions);
-            }
-            return semver.maxSatisfying(versions, packageGlobals.ruby);
-        })
-        .then(versionToInstall => { // install highest compatible version of ruby
-            let installRuby = () => {
-                return executeSystemCommand(getSystemCmd('rvm install ' + versionToInstall), options)
-                    .then(() => versionToInstall);
-            };
-            if (!localRubyVersion || semver.outside(localRubyVersion, packageGlobals.ruby, '<')) {
-                console.log('no compatible version of ruby detected, installing version ' + versionToInstall + ' now');
-                return installRuby();
-            } else if (semver.lt(localRubyVersion, versionToInstall)) {
-                console.log('a newer version of ruby, version ' + versionToInstall + ' is available.');
-                return confirmOptionalInstallation('do you want to install this optional ruby update now (y/n)?  ', () => installRuby());
-            } else {
-                console.log(localRubyVersion + ' satisfies package requirements');
-                return localRubyVersion;
-            }
-        })
-        .then(rubyVersion => { // set the new version as default
-            return executeSystemCommand(convertToBashLoginCommand(rvmSetLocalRubyDefault + rubyVersion), options)
-                .then(() => {
-                    console.log('ruby install complete. default version is now ' + rubyVersion + '.');
-                });
-        })
-        .catch(error => { // handle failure
-            console.log('ruby install failed with the following message:\n' + error);
-        });
-};
+
 let displayUserPrompt = displayPrompt => new Promise((resolve) => {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -395,349 +232,20 @@ let displayUserPrompt = displayPrompt => new Promise((resolve) => {
         rl.close();
     });
 });
-let walkThroughjdkInstall = () => {
-    return displayUserPrompt('This prompt was developed to walk a user through\nthe installation and setup of the official oracle java jdk.' +
-        '\nWhen a step has been completed, press enter to continue to the next step.\nPlease press enter to begin.')
-        .then(() => displayUserPrompt('go to the url http://www.oracle.com/technetwork/java/javase/downloads'))
-        .then(() => displayUserPrompt('click on the jdk download link to be redirected to the download page for all systems.'))
-        .then(() => displayUserPrompt('accept the license agreement, then download the version matching your operating system.' +
-            '\nFor most Apple OSX users, this auto configures your path, so you can ignore the subsequent steps.'))
-        .then(() => {
-            if (operatingSystem === 'win32') {
-                return displayUserPrompt('accept the default path and tools for your new java installation.');
-            }
-        })
-        .then(() => displayUserPrompt('after the download, you will need to first unzip this folder,\nthen add this location to your system path.'))
-        .then(() => {
-            let displayPrompt = (operatingSystem === 'win32') ? 'type "environment variables" into your start button menu or search bar and click enter.' : 'press ctrl + alt + t to launch a terminal';
-            return displayUserPrompt(displayPrompt);
-        })
-        .then(() => {
-            let displayPrompt = (operatingSystem === 'win32') ? 'click on the "environment variables" button near the bottom.' : 'type nano (or your text editor of choice) ~/.bash_profile (.bashrc, .bash_profile, .zshrc, etc.) and press enter';
-            return displayUserPrompt(displayPrompt);
-        })
-        .then(() => {
-            let displayPrompt = (operatingSystem === 'win32') ? 'in the lower window marked "system variables" you should see a variable marked "Path".\nClick on this value to modify it.' :
-                'Scroll to the end of the file. If java has not been added to your environment, you can add it with the followind:\nJAVA_HOME=/usr/lib/jvm/{your java version here}\nexport JAVA_HOME\nSave the file and exit. ' +
-                'reload the system path by pressing . /etc/environment or close the terminal.';
-            return displayUserPrompt(displayPrompt);
-        }).then(() => {
-            if (operatingSystem === 'win32') {
-                return displayUserPrompt('click on the button labeled "New", or double click on "Path"');
-            }
-        })
-        .then(() => {
-            if (operatingSystem === 'win32') {
-                return displayUserPrompt('paste the path to your java sdk in this box. typically, this path is of ' +
-                    'the form\nC:\\Program Files\\Java\\jdk1.8.0_141\\bin, but this is unique to each installation.');
-            }
-        })
-        .then(() => {
-            if (operatingSystem === 'win32') {
-                return displayUserPrompt('Next, you will need to add a System Variable for "JAVA_HOME".\nClick new under the box for system variables.\nA box should pop up with values ' +
-                    'for the variable name and the value. Enter "JAVA_HOME" as the name.\nFor the value, Enter "C:\\Program Files\\Java\\jdk1.8.0_141", but this is unique to each installation.');
-            }
-        }).then(() => {
-            return displayUserPrompt('open a new terminal then type "javac -v".\nIf this was done correctly, you should see output like "javac 1.8.0_141".');
-        })
-        .then(() => {
-            return displayUserPrompt('This concludes the java jdk setup.');
-        });
-};
 
-let installMavenOnHost = () => {
-    let downloadPattern = (operatingSystem === 'win32') ? /http[^"]+maven-([0-9.]+)-bin\.zip/g : /http[^"]+maven-([0-9.]+)-bin\.tar\.gz/g;
-    let unzippedFolderPath = (operatingSystem === 'win32') ?  'C:\\Program Files\\' : '/usr/local/';
-    let mavenUrl = 'https://maven.apache.org/download.cgi';
-    let mavenVersion;
-    return getVersionsWithRequest(mavenUrl, downloadPattern, packageGlobals.maven) // scrape the maven homepage to get version and download link
-        .then(download => {
-            let path = download.downloadHyperlink;
-            console.log('downloading maven version from the following link:\n' + path);
-            let fileName = path.substring(path.lastIndexOf('/') + 1, path.length);
-            unzippedFolderPath += fileName.substring(0, fileName.indexOf(download.version) + download.version.length);
-            let folderSeparator = (operatingSystem === 'win32') ? '\\' : '/';
-            let downloadPath = os.homedir() + folderSeparator + 'Downloads' + folderSeparator + fileName;
-            mavenVersion = download.version;
-            return downloadPackage(path, downloadPath);
-        })
-        .then(downloadPath => { // unzip the downloaded package
-            let unzipCommand;
-            if (operatingSystem === 'win32') {
-                unzipCommand = 'powershell.exe -command \"Add-Type -AssemblyName System.IO.Compression.FileSystem; ' +
-                    '[System.IO.Compression.ZipFile]::ExtractToDirectory(' + '\'' + downloadPath + '\', \'C:\\Program Files\\\');\"';
-            } else {
-                unzipCommand = 'sudo tar -xvzf ' + downloadPath + ' -C /usr/local/';
-            }
-            return executeSystemCommand(unzipCommand, options);
-        })
-        .then(() => { // set environment variables
-            console.log('setting your maven system environment variables.');
-            let outFile = (operatingSystem === 'darwin') ? '.bash_profile' : '.bashrc';
-            let commandSeparator = (operatingSystem === 'win32') ? '; ' : ' && ';
-            let setM2Home = (operatingSystem === 'win32') ? setSystemEnvironmentVariable('M2_HOME', '\'' + unzippedFolderPath + '\'') :
-                'echo "export M2_HOME=/usr/local/maven" >> ' + os.homedir() + '/' + outFile;
-            let setMavenHome = (operatingSystem === 'win32') ? setSystemEnvironmentVariable('MAVEN_HOME', '\'' + unzippedFolderPath + '\'') :
-                'echo "export MAVEN_HOME=/usr/local/maven" >> ' + os.homedir() + '/' + outFile;
-            let setSystemPath = (operatingSystem === 'win32') ? '$old_path = ' + getSystemEnvironmentVariableForWindows('path') +
-                '; $new_path = $old_path + \';\' + \'' + unzippedFolderPath + '\' + \'\\bin\'; ' +
-                setSystemEnvironmentVariable('path', '$new_path') : 'echo "export PATH=/usr/local/maven/bin:\\$PATH" >> ' + os.homedir() + '/' + outFile;
-            let createSymbolicLinkToMaven = 'sudo ln -s ' + unzippedFolderPath + ' /usr/local/maven';
-            let setAllPathVariables = setM2Home + commandSeparator + setMavenHome + commandSeparator + setSystemPath;
-            setAllPathVariables = (operatingSystem === 'win32') ? getSystemCmd(setAllPathVariables) : setAllPathVariables + commandSeparator + createSymbolicLinkToMaven;
-            return executeSystemCommand(setAllPathVariables, options);
-        })
-        .then(() => { // notify user of success
-            console.log('successfully installed maven version ' + mavenVersion);
-        })
-        .catch(error => { // notify user of failure and reason
-            console.log('could not set environment variables at this time.');
-            console.log(error);
-        });
-};
 // refresh the path before running every command in powershell to handle full install
 let convertToPowershellCommand = systemCommand => 'powershell.exe -command \"$env:Path = ' + getSystemEnvironmentVariableForWindows('Path') + '; ' + systemCommand + ';\"';
 let convertToBashLoginCommand = systemCommand => 'bash -l -c \"' + systemCommand + '\"';
 let getSystemCmd = systemCommand => (operatingSystem === 'win32') ? convertToPowershellCommand(systemCommand) : convertToBashLoginCommand(systemCommand);
-let checkForGemUpdates = () => {
-    let getGlobals = modules => getAllUserGlobals(modules, /([a-z-A-Z0-9]+) \(([0-9]+(?:\.[0-9]+)+)/g);
-    let findVersion = (dependency, projectGlobals) => {
-        //powershell.exe -command "gem list `\"^^sass`$`\" -r -a"
-        let searchPattern = (operatingSystem === 'win32') ? '`\\"^^' + dependency + '`$`\\"' : '^' + dependency + '$';
-        let gemListRemote = getSystemCmd('gem list ' + searchPattern + ' -r -a');
-        return findHighestCompatibleVersion(dependency, projectGlobals, gemListRemote);
-    };
-    let localGems;
-    let remoteGems;
-    let gemUpdates;
-    let gemListLocal = getSystemCmd('gem list');
-    console.log('getting installed gems.');
-    return findUserGlobals(gemListLocal, getGlobals)
-        .then(globals => {
-            localGems = globals;
-            return runListOfPromises(packageGlobals.gems, findVersion);
-        })
-        .then(gems => {
-            remoteGems = gems;
-            gemUpdates = findRequiredAndOptionalUpdates(localGems, packageGlobals.gems, remoteGems);
-            if (gemUpdates.required.length > 0) {
-                let gemInstall = getSystemCmd(getInstallationCommand(gemUpdates.required, 'gem install', ':'));
-                return executeSystemCommand(gemInstall, options);
-            }
-        })
-        .then(() => {
-            if (gemUpdates.optional.length > 0) {
-                console.log('gem updates exist for the following packages: ');
-                listOptionals(gemUpdates.optional);
-                return confirmOptionalInstallation('do you want to install these optional gem updates now (y/n)?  ', () => {
-                    let gemInstall = getSystemCmd(getInstallationCommand(gemUpdates.optional, 'gem install', ':'));
-                    return executeSystemCommand(gemInstall, options);
-                });
-            }
-        })
-        .then(() => {
-            console.log('all gem packages are up to date.');
-        });
-};
-let waitForServerStartup = () => {
-    console.log('waiting for server to startup...');
-    let portListenCommand = (operatingSystem === 'win32') ? findPortProcessWindows : findPortProcessOsxLinux;
-    return new Promise((resolve) => {
-        (function waitForEstablishedConnection() {
-            return executeSystemCommand(portListenCommand, {resolve: options.resolve})
-                .then(osResponse => {
-                    if (osResponse.includes('ESTABLISHED')) {
-                        console.log(osResponse);
-                        resolve(osResponse);
-                    } else {
-                        console.log('server is listening, waiting for connection to be established');
-                        setTimeout(waitForEstablishedConnection, 3 * seconds);
-                    }
-                })
-                .catch(() => {
-                    console.log('did not find any process at port 4502, checking again.');
-                    setTimeout(waitForEstablishedConnection, 5 * seconds);
-                });
-        })();
-    });
-};
+
 let goUpDirectories = numberOfDirectories => {
     let splitValue = (operatingSystem === 'win32') ? '\\' : '/';
     return scriptsDirectory.split(splitValue).slice(0, -numberOfDirectories).join(splitValue) + splitValue;
 };
 
-let uploadAndInstallAllAemPackages = folderSeparator => {
-    console.log('server started, installing local packages now...');
-    let packageArray = Object.keys(packageGlobals.aem.zip_files);
-    const crxInstallUrl = 'http://admin:admin@localhost:4502/crx/packmgr/service.jsp';
-    return packageArray.reduce((promise, zipFile) => promise.then(() => new Promise((resolve) => {
-        (function waitForEstablishedConnection() {
-            let formData = {
-                file: fs.createReadStream(os.homedir() + folderSeparator + 'Downloads' + folderSeparator + zipFile),
-                name: zipFile,
-                force: 'true',
-                install: 'true'
-            };
-            request.post({url: crxInstallUrl, formData: formData}, (err, httpResponse, body) => {
-                if (err) {
-                    console.log('upload and install failed with the following message:\n' + err);
-                    setTimeout(waitForEstablishedConnection, 5 * seconds);
-                } else if (httpResponse.statusCode === 200) {
-                    console.log('Upload successful!  Server responded with:', body);
-                    resolve(body);
-                } else {
-                    console.log('Upload failed,  Server responded with:', body);
-                    setTimeout(waitForEstablishedConnection, 5 * seconds);
-                }
-            });
-        })();
-    })), Promise.resolve());
-};
-let stopAemProcess = () => {
-    let findPortProcess = (operatingSystem === 'win32') ? findPortProcessWindows : findPortProcessOsxLinux;
-    return executeSystemCommand(findPortProcess, {resolve: options.resolve})
-        .then(output => {
-            console.log(output);
-            let process = /LISTENING.*?([0-9]+)/g.exec(output);
-            return process[1]; // return the process id
-        })
-        .then(processId => {
-            console.log('ending process number ' + processId);
-            let endPortProcess = (operatingSystem === 'win32') ? 'taskkill /F /PID ' : 'kill ';
-            return executeSystemCommand(endPortProcess + processId, options);
-        });
-};
 let getSystemEnvironmentVariableForWindows = variableName => '[Environment]::GetEnvironmentVariable(\'' + variableName + '\', \'Machine\')';
 let setSystemEnvironmentVariable = (variableName, variableValue) => '[Environment]::SetEnvironmentVariable(\'' + variableName + '\', ' + variableValue + ', \'Machine\')';
-let mavenCleanAndAutoInstall = (commandSeparator, folderSeparator) => {
-    let outFile = goUpDirectories(projectRootUpOne) + 'AEM' + folderSeparator + 'mvnOutput.log';
 
-    //need to check whether JAVA_HOME has been set here for windows machines, if not, this can be executed with the command below
-    let runMavenCleanInstall = (operatingSystem === 'win32' && !process.env.JAVA_HOME) ? '$env:JAVA_HOME = ' + getSystemEnvironmentVariableForWindows('JAVA_HOME') + commandSeparator : '';
-    runMavenCleanInstall += 'cd ' + goUpDirectories(projectRoot) + 't-mobile' + commandSeparator + 'mvn clean install \-PautoInstallPackage > ' + outFile;
-
-    console.log('running mvn clean and auto package install.\nOutput is being sent to the file ' + outFile);
-    return executeSystemCommand(getSystemCmd(runMavenCleanInstall), options);
-};
-let copyNodeFile = folderSeparator => () => {
-    let nodeFolderPath = goUpDirectories(projectRoot) + 't-mobile' + folderSeparator + 'node';
-    console.log('copying node file into ' + nodeFolderPath);
-    return executeSystemCommand('mkdir ' + nodeFolderPath, options)
-        .then(() => {
-            let nodePath = process.execPath;
-            let copyNodeFile = (operatingSystem === 'win32') ? 'copy ' : 'cp ';
-            copyNodeFile += '\"' + nodePath + '\" ' + nodeFolderPath + folderSeparator;
-            return executeSystemCommand(copyNodeFile, options);
-        });
-};
-let startAemServer = (commandSeparator, jarName) =>{
-    console.log('starting jar file AEM folder.');
-    let startServer = 'cd ' + goUpDirectories(projectRootUpOne) + 'AEM' + commandSeparator;
-    startServer += (operatingSystem === 'win32') ? 'Start-Process java -ArgumentList \'-jar\', \'' + jarName + '\'' : 'java -jar ' + jarName + ' &';
-    executeSystemCommand(getSystemCmd(startServer), options);
-};
-let downloadAllAemFiles = folderSeparator => () => {
-    return runListOfPromises(packageGlobals.aem.zip_files, (dependency, globalPackage) => {
-        console.log('downloading aem dependency ' + dependency);
-        return downloadPackage(globalPackage[dependency], os.homedir() + folderSeparator + 'Downloads' + folderSeparator + dependency);
-    });
-};
-let aemInstallationProcedure = () => {
-    let folderSeparator = (operatingSystem === 'win32') ? '\\' : '/';
-    let commandSeparator = (operatingSystem === 'win32') ? '; ' : ' && ';
-    let aemFolderPath = goUpDirectories(projectRootUpOne) + 'AEM';
-    let downloadFile = (dependency, globalPackage) => {
-        return downloadPackage(globalPackage[dependency], aemFolderPath + folderSeparator + dependency)
-            .then(() => dependency);
-    };
-    let jarName = '';
-    console.log('creating AEM directory at ' + aemFolderPath);
-    return executeSystemCommand('mkdir ' + aemFolderPath, options)
-        .then(() => {
-            console.log('downloading jar file into AEM folder.');
-            return runListOfPromises(packageGlobals.aem.jar_files, downloadFile);
-        })
-        .then(fileName => {
-            jarName = fileName;
-            console.log('downloading license file into AEM folder.');
-            return runListOfPromises(packageGlobals.aem.license, downloadFile);
-        })
-        .then(copyNodeFile(folderSeparator))
-        .then(() => startAemServer(commandSeparator, jarName))
-        .then(downloadAllAemFiles(folderSeparator))
-        .then(() => waitForServerStartup())
-        .then(() => uploadAndInstallAllAemPackages(folderSeparator))
-        .then(() => mavenCleanAndAutoInstall(commandSeparator, folderSeparator))
-        .then(() => stopAemProcess())
-        .then(() => {
-            console.log('successfully built project with mvn.');
-        })
-        .catch(error => {
-            console.log('failed to build maven in t-mobile folder with the following message\n' + error);
-        });
-};
-let installAemDependencies = () => {
-    console.log('checking for Aem dependencies now..');
-    const windowsFindQuickstart = 'dir C:\\*crx-quickstart /ad /b /s';
-    const osxLinuxFindQuickstart = 'sudo find ' + os.homedir() + ' -type d -name "crx-quickstart"';
-    let findQuickstart = (operatingSystem === 'win32') ? windowsFindQuickstart : osxLinuxFindQuickstart;
-    return executeSystemCommand(findQuickstart, { resolve: options.resolve })
-        .then(osResponse => {
-            if (osResponse !== '') {
-                console.log('found an existing aem installation at ' + osResponse.trim() + '.');
-                return;
-            }
-            console.log('missing aem dependencies, installing all aem dependencies now...');
-            return aemInstallationProcedure();
-        })
-        .catch(() => {
-            // AEM is not installed, run full aem installation procedure here
-            console.log('installing all aem dependencies now...');
-            return aemInstallationProcedure();
-        });
-};
-let installRuby = () => {
-    return (operatingSystem === 'win32') ? checkRubyInstallWindows() : checkRvmInstallMacLinux();
-};
-let installJava = () => {
-    let javaOptions = {};
-    javaOptions.resolve = options.resolve;
-    javaOptions.stderr = (resolve, reject, data) => { // by default the output is directed to stderr
-        resolve(data);
-    };
-    console.log('checking java version compatibility.');
-    // important to test the java compiler is in path, windows does not add to path by default
-    let checkJavaCompilerVersion = getSystemCmd('javac -version');
-    return executeSystemCommand(checkJavaCompilerVersion, javaOptions)
-        .catch(() => { //java commands are redirected to stderr in both windows and linux environments
-            console.log('no jdk version found on this computer');
-            return walkThroughjdkInstall();
-        })
-        .then(javaVersion => {
-            if (javaVersion) {
-                let version = javaVersion.match(versionPattern);
-                if (!version || semver.outside(version[0], packageGlobals.engines.java, '<')) {
-                    console.log('no compatible jdk version found on this computer');
-                    return walkThroughjdkInstall();
-                } else {
-                    console.log('java version ' + version[0] + ' is up to date');
-                }
-            }
-        });
-};
-let installMaven = () => {
-    const checkMavenVersion = getSystemCmd('mvn -v');
-    return executeSystemCommand(checkMavenVersion, {resolve: options.resolve})
-        .catch(() => {
-            console.log('No version of maven detected. Installing maven now.');
-            return installMavenOnHost();
-        })
-        .then(mavenVersion => {
-            if (mavenVersion) {
-                console.log('found maven version ' + mavenVersion.match(versionPattern)[0]);
-            }
-        });
-};
 let installAngularUiDependenciesWithYarn = () => {
     console.log('installing npm dependencies in angular-ui project folder.');
     let installAngularUiYarn = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
@@ -792,28 +300,31 @@ let endProcessWithMessage = (message, delay, exitCode) => {
         process.exit(exitCode);
     }, delay);
 };
-let fullInstall = () => {
-    let systemState = {};
-    installRuby()
-        .then(() => checkForGemUpdates())
-        .then(() => installGlobalNpmDependencies())
-        .then(userState => {
-            systemState = userState;
-            return installAngularUiDependenciesWithYarn();
-        })
-        .then(angularUiSuccess => updateWebdriver(angularUiSuccess))
-        .then(() => installJava())
-        .then(() => installMaven())
-        .then(() => runGruntPremerge())
-        .then(() => installAemDependencies())
-        .then(() => endProcessWithMessage('For angular development, run command "grunt host".\nFor AEM development, start the crx-quickstart server.', 5 * seconds, 0));
-};
+
 module.exports = {
-    installNpmGlobals: installGlobalNpmDependencies,
-    installRuby: installRuby,
-    installAem: installAemDependencies,
-    installGems: checkForGemUpdates,
-    installJava: installJava,
-    installMaven: installMaven,
-    installEverything: fullInstall
+    getSystemCommand: getSystemCmd,
+    findHighestCompatibleVersion: findHighestCompatibleVersion,
+    findUserGlobals: findUserGlobals,
+    getAllUserGlobals: getAllUserGlobals,
+    runListOfPromises: runListOfPromises,
+    findRequiredAndOptionalUpdates: findRequiredAndOptionalUpdates,
+    handleUnresponsiveSystem: handleUnresponsiveSystem,
+    executeSystemCommand: executeSystemCommand,
+    confirmOptionalInstallation: confirmOptionalInstallation,
+    getVersionWithRequest: getVersionsWithRequest,
+    downloadPackage: downloadPackage,
+    convertToBashLoginCommand: convertToBashLoginCommand,
+    displayUserPrompt: displayUserPrompt,
+    getWindowsEnvironmentVariable: getSystemEnvironmentVariableForWindows,
+    setWindowsEnvironmentVariable: setSystemEnvironmentVariable,
+    getOperatingSystem: getOperatingSystem,
+    getOptions: getOptions,
+    getVersionPattern: getVersionPattern,
+    getProjectGlobals: getProjectGlobals,
+    getHomeDirectory: getHomeDirectory,
+    getMaxCompatibleVersion: getMaxCompatibleVersion,
+    getInstallationCommand: getInstallationCommand,
+    listOptionals: listOptionals,
+    isPackageCompatible: isPackageCompatible,
+    goUpDirectories: goUpDirectories
 };
