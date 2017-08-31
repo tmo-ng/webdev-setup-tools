@@ -72,7 +72,7 @@ let installJava = () => {
         .then(javaVersion => {
             if (javaVersion) {
                 let version = javaVersion.match(versionPattern);
-                if (version || setup.isPackageCompatible(version[0], requiredJavaVersion)) {
+                if (version && setup.isPackageCompatible(version[0], requiredJavaVersion)) {
                     console.log('java version ' + version[0] + ' is up to date');
                     return;
                 }
