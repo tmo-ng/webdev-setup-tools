@@ -127,4 +127,3 @@ let checkRvmInstallMacLinux = () => {
 module.exports = {
     installRuby: installRuby
 };
-installRuby();

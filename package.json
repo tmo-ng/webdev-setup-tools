@@ -5,16 +5,13 @@
   "description": "Setup and install packackes required for many web development tasks",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cdejarlais/webdev-setup-tools.git"
+    "url": "git+https://github.com/cdejarlais/webdev-setup-tools.git"
   },
   "keywords": [
-    "installNpmGlobals",
-    "installRuby",
-    "installAem",
-    "installGems",
-    "installJava",
-    "installMaven",
-    "installEverything"
+    "aem",
+    "npm",
+    "maven",
+    "java"
   ],
   "licenses": [
     {
@@ -22,9 +19,9 @@
       "url": "https://github.com/cdejarlais/webdev-setup-tools/blob/master/LICENSE-MIT.md"
     }
   ],
-  "dependencies": {
-    "semver": "5.3.0",
-    "request": "2.81.0"
+  "peerDependencies": {
+    "semver": "5.x",
+    "request": "2.x"
   },
   "contributors": [
     {

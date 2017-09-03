@@ -256,19 +256,15 @@ let installAngularUiDependenciesWithYarn = () => {
             console.log(error);
         });
 };
-let updateWebdriver = (angularUiSuccess) => {
-    if (angularUiSuccess) {
-        console.log('updating webdriver in angular-ui project folder.');
-        let updateWebDriver = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
-        updateWebDriver += (operatingSystem === 'win32') ? '; npm run update-webdriver' : ' && npm run update-webdriver';
-        return executeSystemCommand(getSystemCmd(updateWebDriver), options)
-            .catch(error => {
-                console.log('updating webdriver failed in angular-ui project folder with the following message:\n');
-                console.log(error);
-            });
-    } else {
-        console.log('update to webdriver aborted due to failed angular build.');
-    }
+let updateWebdriver = () => {
+    console.log('updating webdriver in angular-ui project folder.');
+    let updateWebDriver = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
+    updateWebDriver += (operatingSystem === 'win32') ? '; npm run update-webdriver' : ' && npm run update-webdriver';
+    return executeSystemCommand(getSystemCmd(updateWebDriver), options)
+        .catch(error => {
+            console.log('updating webdriver failed in angular-ui project folder with the following message:\n');
+            console.log(error);
+        });
 };
 let getNpmPathOnWindows = () => {
     const windowsDirectoryPattern = /C:\\[^;]+npm/g;
@@ -326,5 +322,9 @@ module.exports = {
     getInstallationCommand: getInstallationCommand,
     listOptionals: listOptionals,
     isPackageCompatible: isPackageCompatible,
-    goUpDirectories: goUpDirectories
+    goUpDirectories: goUpDirectories,
+    endProcessWithMessage: endProcessWithMessage,
+    runGruntPremerge: runGruntPremerge,
+    installAngularUiDependenciesWithYarn: installAngularUiDependenciesWithYarn,
+    updateWebdriver: updateWebdriver
 };
