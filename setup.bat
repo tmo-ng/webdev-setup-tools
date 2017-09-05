@@ -5,7 +5,7 @@ set latestNodeVersion=""
 set downloadsFolder=%userprofile%\Downloads\
 set npmCmd=npm
 set powershellVersion=""
-for /f "tokens=*" %%i in ('powershell.exe -command "$output = Get-Host | Select-Object Version; $output -match '[3-9]'"') do (
+for /f "tokens=*" %%i in ('powershell -command "& { . .\nodeInstallerScript.ps1; FindPowershellVersion }"') do (
     set powershellVersion=%%i
 )
 if !powershellVersion! == False (

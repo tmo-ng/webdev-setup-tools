@@ -20,3 +20,12 @@ function UpdateToMostRecentVersion
 {
 
 }
+function FindPowershellVersion
+{
+    $output = Get-Host | Select-Object Version
+    $version = $output -match '(?<major_version>[0-9]+)(?:\.[0-9]+)+'
+    if ($version) {
+        return $matches['major_version'] -ge 3
+    }
+    return $version
+}
