@@ -27,5 +27,5 @@ function FindPowershellVersion
     if ($version) {
         return $matches['major_version'] -ge 3
     }
-    return $version
+    return 'False'
 }
