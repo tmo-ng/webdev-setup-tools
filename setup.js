@@ -151,10 +151,10 @@ let confirmOptionalInstallation = (displayPrompt, installCallback) => {
 let getAllUserGlobals = (installedModules, modulePattern) => { // return a map of all modules user has installed
     let match = modulePattern.exec(installedModules);
     let userGlobals = {};
-    let GLOBAL_NAME = 1;
-    let GLOBAL_VERSION = 2;
+    let globalName = 1;
+    let globalVersion = 2;
     while (match !== null) {
-        userGlobals[match[GLOBAL_NAME]] = match[GLOBAL_VERSION];
+        userGlobals[match[globalName]] = match[globalVersion];
         match = modulePattern.exec(installedModules);
     }
     return userGlobals;
@@ -175,7 +175,7 @@ let listOptionals = optionalPackages => {
     }
 };
 
-let getVersionsWithRequest = (productUrl, hyperlinkPattern, range) => {
+let getVersionWithRequest = (productUrl, hyperlinkPattern, range) => {
     return new Promise((resolve, reject) => {
         request({
             followAllRedirects: true,
@@ -307,9 +307,10 @@ module.exports = {
     handleUnresponsiveSystem: handleUnresponsiveSystem,
     executeSystemCommand: executeSystemCommand,
     confirmOptionalInstallation: confirmOptionalInstallation,
-    getVersionWithRequest: getVersionsWithRequest,
+    getVersionWithRequest: getVersionWithRequest,
     downloadPackage: downloadPackage,
     convertToBashLoginCommand: convertToBashLoginCommand,
+    convertToPowershellCommand: convertToPowershellCommand,
     displayUserPrompt: displayUserPrompt,
     getWindowsEnvironmentVariable: getSystemEnvironmentVariableForWindows,
     setWindowsEnvironmentVariable: setSystemEnvironmentVariable,

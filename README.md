@@ -1,8 +1,7 @@
-webdev-setup-tools
-================
+webdev-setup-tools-core
+=======================
 
-A small library of utility functions designed to setup common development
-tools used by web developers. This package should be installed in the
+A small library of core utility functions used by the webdev-setup-tools-core plugins. This package should be installed in the
 node modules folder located in the root of the project folder (where the .git folder is located).
 It determines the packages to install from the "globals" field in the package.json in the project root.
 
@@ -16,13 +15,22 @@ automatically.
 It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
 OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
+## webdev-setup-tools-core plugins
+webdev-setup-tools-core has a number of plugins available for installation including
+* [`webdev-setup-tools-npm `](https://github.com/cdejarlais/webdev-setup-tools-npm)
+* [`webdev-setup-tools-aem `](https://github.com/cdejarlais/webdev-setup-tools-aem)
+* [`webdev-setup-tools-ruby `](https://github.com/cdejarlais/webdev-setup-tools-ruby)
+* [`webdev-setup-tools-gems `](https://github.com/cdejarlais/webdev-setup-tools-gems)
+* [`webdev-setup-tools-java `](https://github.com/cdejarlais/webdev-setup-tools-java)
+* [`webdev-setup-tools-maven `](https://github.com/cdejarlais/webdev-setup-tools-maven)
+
 ## Installing Npm Package
 
-  npm install https://github.com/cdejarlais/webdev-setup-tools.git --save
+  npm install https://github.com/cdejarlais/webdev-setup-tools-core.git --save
 ## Setup Scripts
 Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included at the root of the npm package.
 
-**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools folder in a terminal window, and enter the following commands:
+**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools-core folder in a terminal window, and enter the following commands:
   ```sh
   chmod 755 setup.sh
   ./setup.sh
@@ -33,7 +41,7 @@ When an update becomes available, it will prompt the user for confirmation, then
 
 
 
-**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools folder in a command prompt with administrative priveleges, and enter the following command:
+**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools-core folder in a command prompt with administrative priveleges, and enter the following command:
 ```sh
 setup.bat
 ```
@@ -41,46 +49,27 @@ This batch file first downloads the latest msi package from the official nodejs 
 installation of the msi package. Each time the script is run after the initial install, it will check for newer versions of node.
 When an update becomes available, it will prompt the user for confirmation, then update to the newest version of node.
 ## Usage
-  **Note:** The commands below can be pasted directly into a administrative command prompt window for Windows
-  users, or a terminal window for OSX and Linux users.
+**Note:** summary of the most common methods used in the plugins
 
-  install/update all required npm globals
+  download a package from the specified url
   ```sh
-  let setup_tools = require('webdev-setup-tools');
-  require('webdev-setup-tools').installNpmGlobals();
+  let setup_tools = require('webdev-setup-tools-core');
+  setup_tools.downloadPackage('http://apache.mirrors.tds.net/3.5.0/binaries/apache-maven-3.5.0-bin.zip', 'C:\'); // download file to destination 'C:\'
   ```
-  install ruby and configure environment variables
+  get a command formatted for either bash or powershell depending on the operating system
   ```sh
-  let setup_tools = require('webdev-setup-tools');
-  require('webdev-setup-tools').installRuby();
+  let setup_tools = require('webdev-setup-tools-core');
+  setup_tools.getSystemCcmmand('java -jar setup.jar');
   ```
-  download and install all required aem dependencies
+  get object with version and downloadHyperlink fields from a webpage for the highest values in semantic version range
   ```sh
-  let setup_tools = require('webdev-setup-tools');
-  require('webdev-setup-tools').installAem();
+  let setup_tools = require('webdev-setup-tools-core');
+  let versionRange = '~3.0.0';
+  let downloadPattern = /http[^"]+maven-([0-9.]+)-bin\.tar\.gz/g;
+  let mavenUrl = 'https://maven.apache.org/download.cgi';
+  return setup_tools.getVersionWithRequest(mavenUrl, downloadPattern, versionRange);
   ```
-  install/update all required ruby gems
-  ```sh
-  let setup_tools = require('webdev-setup-tools');
-  require('webdev-setup-tools').installGems();
-  ```
-  walk user through installation and path setup of java jdk
-  ```sh
-  let setup_tools = require('webdev-setup-tools');
-  require('webdev-setup-tools').installJava();
-  ```
-  install maven and configure environment variables
-  ```sh
-  let setup_tools = require('webdev-setup-tools');
-  require('webdev-setup-tools').installMaven();
-  ```
-  Full system install. Downloads, installs, and configures Ruby, Ruby gems, Npm globals, Java,
-  Maven, and all AEM packages. In addition, runs a yarn install to install package.json dependencies in the angular-ui folder, performs an update of webdriver
-  in the angular-ui folder, runs a grunt pre-merge for the angular-ui folder and performs a mvn clean install for the t-mobile folder.
-  ```sh
-  let setup_tools = require('webdev-setup-tools');
-  require('webdev-setup-tools').installEverything();
-  ```
+
 
 
 
@@ -123,4 +112,4 @@ out of the box.
 
 ## Release History
 
-* 0.1.0 Initial release
+* 1.0.0 Initial release
