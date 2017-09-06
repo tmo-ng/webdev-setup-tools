@@ -1,8 +1,8 @@
-webdev-setup-tools-core
+webdev-setup-tools
 =======================
 
-A small library of core utility functions used by the webdev-setup-tools-core plugins. This package should be installed in the
-node modules folder located in the root of the project folder (where the .git folder is located).
+A small library of core utility functions used by the webdev-setup-tools plugins. This package should be installed in the
+node modules folder located in the root of the project folder.
 It determines the packages to install from the "globals" field in the package.json in the project root.
 
 It was designed to be largely idempotent. That is, after the the system is properly configured,
@@ -15,8 +15,8 @@ automatically.
 It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
 OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
-## webdev-setup-tools-core plugins
-webdev-setup-tools-core has a number of plugins available for installation including
+## webdev-setup-tools plugins
+webdev-setup-tools has a number of plugins available for installation including
 * [`webdev-setup-tools-npm `](https://github.com/cdejarlais/webdev-setup-tools-npm)
 * [`webdev-setup-tools-aem `](https://github.com/cdejarlais/webdev-setup-tools-aem)
 * [`webdev-setup-tools-ruby `](https://github.com/cdejarlais/webdev-setup-tools-ruby)
@@ -26,11 +26,11 @@ webdev-setup-tools-core has a number of plugins available for installation inclu
 
 ## Installing Npm Package
 
-  npm install webdev-setup-tools-core --save
+  npm install webdev-setup-tools --save
 ## Setup Scripts
 Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included at the root of the npm package.
 
-**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools-core folder in a terminal window, and enter the following commands:
+**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools folder in a terminal window, and enter the following commands:
   ```sh
   chmod 755 setup.sh
   ./setup.sh
@@ -41,7 +41,7 @@ When an update becomes available, it will prompt the user for confirmation, then
 
 
 
-**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools-core folder in a command prompt with administrative priveleges, and enter the following command:
+**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools folder in a command prompt with administrative priveleges, and enter the following command:
 ```sh
 setup.bat
 ```
@@ -53,17 +53,17 @@ When an update becomes available, it will prompt the user for confirmation, then
 
   download a package from the specified url
   ```sh
-  let setup_tools = require('webdev-setup-tools-core');
+  let setup_tools = require('webdev-setup-tools');
   setup_tools.downloadPackage('http://apache.mirrors.tds.net/3.5.0/binaries/apache-maven-3.5.0-bin.zip', 'C:\'); // download file to destination 'C:\'
   ```
   get a command formatted for either bash or powershell depending on the operating system
   ```sh
-  let setup_tools = require('webdev-setup-tools-core');
+  let setup_tools = require('webdev-setup-tools');
   setup_tools.getSystemCcmmand('java -jar setup.jar');
   ```
   get object with version and downloadHyperlink fields from a webpage for the highest values in semantic version range
   ```sh
-  let setup_tools = require('webdev-setup-tools-core');
+  let setup_tools = require('webdev-setup-tools');
   let versionRange = '~3.0.0';
   let downloadPattern = /http[^"]+maven-([0-9.]+)-bin\.tar\.gz/g;
   let mavenUrl = 'https://maven.apache.org/download.cgi';
