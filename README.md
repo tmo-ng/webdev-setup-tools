@@ -26,7 +26,7 @@ webdev-setup-tools-core has a number of plugins available for installation inclu
 
 ## Installing Npm Package
 
-  npm install https://github.com/cdejarlais/webdev-setup-tools-core.git --save
+  npm install webdev-setup-tools-core --save
 ## Setup Scripts
 Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included at the root of the npm package.
 
