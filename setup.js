@@ -2,15 +2,14 @@
 const semver = require('semver');
 const os = require('os');
 const operatingSystem = os.platform().trim(); // supported values are darwin (osx), linux (ubuntu), and win32 ()
-const packageGlobals = require('../../package.json').globals;
+const packageGlobals = require('../../package.json').web-dev-setup-tools;
 const {exec} = require('child_process');
 const request = require('request');
 const fs = require('fs');
-const versionPattern = /([0-9]+(?:\.[0-9]+)+)/g;
 const readline = require('readline');
 const scriptsDirectory = __dirname;
 const projectRoot = 2;
-const options = {
+const formattedOutputOptions = {
     resolve: (resolve, data) => {
         resolve(data);
     },
@@ -18,18 +17,9 @@ const options = {
         process.stdout.write(data);
     }
 };
-let getOperatingSystem  = () => operatingSystem;
-let getOptions  = () => options;
-let getVersionPattern  = () => versionPattern;
+let getOutputOptions  = () => formattedOutputOptions;
 let getProjectGlobals  = (packageName) => {
     return packageGlobals[packageName];
-};
-let getHomeDirectory  = () => os.homedir();
-let getMaxCompatibleVersion = (arrayOfVersions, globalVersion) => {
-    return semver.maxSatisfying(arrayOfVersions, globalVersion);
-};
-let isPackageCompatible = (version, range) => {
-    return !semver.outside(version, range, '<');
 };
 // userGlobals - object mapping packages to versions
 // projectGlobals - global object listed in package.json at root
@@ -250,7 +240,7 @@ let installAngularUiDependenciesWithYarn = () => {
     console.log('installing npm dependencies in angular-ui project folder.');
     let installAngularUiYarn = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
     installAngularUiYarn += (operatingSystem === 'win32') ? ';' + getNpmPathOnWindows() + '\\yarn.cmd install' : ' && yarn install';
-    return executeSystemCommand(getSystemCmd(installAngularUiYarn), options)
+    return executeSystemCommand(getSystemCmd(installAngularUiYarn), formattedOutputOptions)
         .catch(error => {
             console.log('npm install failed in angular ui folder with the following message:\n');
             console.log(error);
@@ -260,7 +250,7 @@ let updateWebdriver = () => {
     console.log('updating webdriver in angular-ui project folder.');
     let updateWebDriver = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
     updateWebDriver += (operatingSystem === 'win32') ? '; npm run update-webdriver' : ' && npm run update-webdriver';
-    return executeSystemCommand(getSystemCmd(updateWebDriver), options)
+    return executeSystemCommand(getSystemCmd(updateWebDriver), formattedOutputOptions)
         .catch(error => {
             console.log('updating webdriver failed in angular-ui project folder with the following message:\n');
             console.log(error);
@@ -273,8 +263,8 @@ let getNpmPathOnWindows = () => {
 };
 let runGruntPremerge = () => {
     let premergeOptions = {};
-    premergeOptions.resolve = options.resolve;
-    premergeOptions.stdout = options.stdout;
+    premergeOptions.resolve = formattedOutputOptions.resolve;
+    premergeOptions.stdout = formattedOutputOptions.stdout;
     premergeOptions.exit = (resolve, reject, data) => {
         resolve(data);
     };
@@ -314,15 +304,10 @@ module.exports = {
     displayUserPrompt: displayUserPrompt,
     getWindowsEnvironmentVariable: getSystemEnvironmentVariableForWindows,
     setWindowsEnvironmentVariable: setSystemEnvironmentVariable,
-    getOperatingSystem: getOperatingSystem,
-    getOptions: getOptions,
-    getVersionPattern: getVersionPattern,
+    getOutputOptions: getOutputOptions,
     getProjectGlobals: getProjectGlobals,
-    getHomeDirectory: getHomeDirectory,
-    getMaxCompatibleVersion: getMaxCompatibleVersion,
     getInstallationCommand: getInstallationCommand,
     listOptionals: listOptionals,
-    isPackageCompatible: isPackageCompatible,
     goUpDirectories: goUpDirectories,
     endProcessWithMessage: endProcessWithMessage,
     runGruntPremerge: runGruntPremerge,

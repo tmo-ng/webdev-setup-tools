@@ -3,7 +3,38 @@ webdev-setup-tools
 
 A small library of core utility functions used by the webdev-setup-tools plugins. This package should be installed in the
 node modules folder located in the root of the project folder.
-It determines the packages to install from the "globals" field in the package.json in the project root.
+It determines the packages to install from the "web-dev-setup-tools" field in the package.json in the project root.
+This field typically has the following syntax:
+
+  ```sh
+  "web-dev-setup-tools": {
+      "node": {
+        "install": ">=7.0.0",
+        "globals": {
+          "bower": "^1.0.0",
+          "grunt-cli": "~1.0.0",
+          "gulp": ">=3.9.1",
+          "gulp-cli": ">=1.3.0",
+          "depcheck": "0.6.7",
+          "npm-check": "5.4.4",
+          "npm-check-updates": "2.11.1",
+          "sass": "0.5.0",
+          "trash-cli": "^1.0.0",
+          "ntl": "1.2.0",
+          "p-s": "4.1.0"
+        }
+      },
+      "ruby": {
+        "install": "^2.0.0",
+        "gems": {
+          "sass":"^3.0.0"
+        }
+      },
+      "maven": "3.5.0",
+      "aem": "",
+      "java": ">1.7.0"
+    }
+  ```
 
 It was designed to be largely idempotent. That is, after the the system is properly configured,
 no new modifications will be made. However, it was also developed to keep user dependencies up to
@@ -17,7 +48,7 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ## webdev-setup-tools plugins
 webdev-setup-tools has a number of plugins available for installation including
-* [`webdev-setup-tools-npm `](https://github.com/cdejarlais/webdev-setup-tools-npm)
+* [`webdev-setup-tools-npm-globals `](https://github.com/cdejarlais/webdev-setup-tools-npm-globals)
 * [`webdev-setup-tools-aem `](https://github.com/cdejarlais/webdev-setup-tools-aem)
 * [`webdev-setup-tools-ruby `](https://github.com/cdejarlais/webdev-setup-tools-ruby)
 * [`webdev-setup-tools-gems `](https://github.com/cdejarlais/webdev-setup-tools-gems)
