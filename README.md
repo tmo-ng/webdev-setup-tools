@@ -21,7 +21,10 @@ This field typically has the following syntax:
           "sass": "0.5.0",
           "trash-cli": "^1.0.0",
           "ntl": "1.2.0",
-          "p-s": "4.1.0"
+          "p-s": "4.1.0",
+          "windows": {
+            "windows-build-tools": "^1.2.0"
+          }
         }
       },
       "ruby": {
@@ -31,7 +34,20 @@ This field typically has the following syntax:
         }
       },
       "maven": "3.5.0",
-      "aem": "",
+      "aem": {
+        "author": {
+          "aem6-author-p4009.jar": "https://sample.com/aem6-author-p4009.jar"
+        },
+        "license": {
+          "license.properties": "https://sample.com/license.properties"
+        },
+        "zip_files": {
+          "acs-aem-2.12.0-min.zip": "https://github.com/acs-aem-2.12.0-min.zip",
+          "AEM-2-6.1.SP2.zip": "https://sample.com/AEM-2-6.1.SP2.zip",
+          "cq-6.1.0-sp2-cf-1.0.zip": "https://sample.com/cq-6.1.0-sp2-cf-1.0.zip",
+          "BRT_content_07.zip": "https://sample.com/BRT_content_07.zip"
+        }
+      }
       "java": ">1.7.0"
     }
   ```
