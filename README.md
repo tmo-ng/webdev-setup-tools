@@ -47,7 +47,7 @@ This field typically has the following syntax:
           "cq-6.1.0-sp2-cf-1.0.zip": "https://sample.com/cq-6.1.0-sp2-cf-1.0.zip",
           "BRT_content_07.zip": "https://sample.com/BRT_content_07.zip"
         }
-      }
+      },
       "java": ">1.7.0"
     }
   ```
