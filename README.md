@@ -1,56 +1,54 @@
 webdev-setup-tools
 =======================
 
-A small library of core utility functions used by the webdev-setup-tools plugins. This package should be installed in the
+A small library of core utility functions used by the webdev-setup-tools plugins.
+
+## Install with npm
+
+  npm install webdev-setup-tools --save
+
+## Purpose
+Often , the
+
+## Configuration
+
+This package should be installed in the
 node modules folder located in the root of the project folder.
 It determines the packages to install from the "web-dev-setup-tools" field in the package.json in the project root.
 This field typically has the following syntax:
 
-  ```sh
-  "web-dev-setup-tools": {
-      "node": {
-        "install": ">=7.0.0",
-        "globals": {
-          "bower": "^1.0.0",
-          "grunt-cli": "~1.0.0",
-          "gulp": ">=3.9.1",
-          "gulp-cli": ">=1.3.0",
-          "depcheck": "0.6.7",
-          "npm-check": "5.4.4",
-          "npm-check-updates": "2.11.1",
-          "sass": "0.5.0",
-          "trash-cli": "^1.0.0",
-          "ntl": "1.2.0",
-          "p-s": "4.1.0",
-          "windows": {
-            "windows-build-tools": "^1.2.0"
-          }
-        }
-      },
-      "ruby": {
-        "install": "^2.0.0",
-        "gems": {
-          "sass":"^3.0.0"
-        }
-      },
-      "maven": "3.5.0",
-      "aem": {
-        "author": {
-          "aem6-author-p4009.jar": "https://sample.com/aem6-author-p4009.jar"
-        },
-        "license": {
-          "license.properties": "https://sample.com/license.properties"
-        },
-        "zip_files": {
-          "acs-aem-2.12.0-min.zip": "https://github.com/acs-aem-2.12.0-min.zip",
-          "AEM-2-6.1.SP2.zip": "https://sample.com/AEM-2-6.1.SP2.zip",
-          "cq-6.1.0-sp2-cf-1.0.zip": "https://sample.com/cq-6.1.0-sp2-cf-1.0.zip",
-          "BRT_content_07.zip": "https://sample.com/BRT_content_07.zip"
-        }
-      },
-      "java": ">1.7.0"
+
+```sh
+"web-dev-setup-tools": {
+  "node": {
+    "install": ">=7.0.0",
+    // other package imports ...
     }
-  ```
+  },
+  "ruby": {
+    "install": "^2.0.0",
+    "gems": {
+      "sass":"^3.0.0"
+    }
+  },
+  "maven": "3.5.0",
+  "aem": {
+    "author": {
+      "aem6-author-p4009.jar": "https://sample.com/aem6-author-p4009.jar"
+    },
+    "license": {
+      "license.properties": "https://sample.com/license.properties"
+    },
+    "zip_files": {
+      "acs-aem-2.12.0-min.zip": "https://github.com/acs-aem-2.12.0-min.zip",
+      "AEM-2-6.1.SP2.zip": "https://sample.com/AEM-2-6.1.SP2.zip",
+      "cq-6.1.0-sp2-cf-1.0.zip": "https://sample.com/cq-6.1.0-sp2-cf-1.0.zip",
+      "BRT_content_07.zip": "https://sample.com/BRT_content_07.zip"
+    }
+  },
+  "java": ">1.7.0"
+}
+```
 
 It was designed to be largely idempotent. That is, after the the system is properly configured,
 no new modifications will be made. However, it was also developed to keep user dependencies up to
@@ -71,9 +69,7 @@ webdev-setup-tools has a number of plugins available for installation including
 * [`webdev-setup-tools-java `](https://github.com/cdejarlais/webdev-setup-tools-java)
 * [`webdev-setup-tools-maven `](https://github.com/cdejarlais/webdev-setup-tools-maven)
 
-## Installing Npm Package
 
-  npm install webdev-setup-tools --save
 ## Setup Scripts
 Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included at the root of the npm package.
 
@@ -106,7 +102,7 @@ When an update becomes available, it will prompt the user for confirmation, then
   get a command formatted for either bash or powershell depending on the operating system
   ```sh
   let setup_tools = require('webdev-setup-tools');
-  setup_tools.getSystemCcmmand('java -jar setup.jar');
+  setup_tools.getSystemCommand('java -jar setup.jar');
   ```
   get object with version and downloadHyperlink fields from a webpage for the highest values in semantic version range
   ```sh

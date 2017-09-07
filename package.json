@@ -1,5 +1,5 @@
 {
-  "main": "setup.js",
+  "main": "webdev-setup-tools.js",
   "name": "webdev-setup-tools",
   "version": "1.0.0",
   "description": "Setup and install packackes required for many web development tasks",

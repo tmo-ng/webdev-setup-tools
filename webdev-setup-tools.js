@@ -1,14 +1,14 @@
 // this file intended to parse the package.json file to find any dependencies that need to be updated
 const semver = require('semver');
 const os = require('os');
-const operatingSystem = os.platform().trim(); // supported values are darwin (osx), linux (ubuntu), and win32 ()
 const packageGlobals = require('../../package.json').web-dev-setup-tools;
 const {exec} = require('child_process');
 const request = require('request');
 const fs = require('fs');
 const readline = require('readline');
+
+const operatingSystem = os.platform().trim(); // supported values are darwin (osx), linux (ubuntu), and win32 ()
 const scriptsDirectory = __dirname;
-const projectRoot = 2;
 const formattedOutputOptions = {
     resolve: (resolve, data) => {
         resolve(data);
@@ -17,6 +17,7 @@ const formattedOutputOptions = {
         process.stdout.write(data);
     }
 };
+
 let getOutputOptions  = () => formattedOutputOptions;
 let getProjectGlobals  = (packageName) => {
     return packageGlobals[packageName];
@@ -108,14 +109,14 @@ let executeSystemCommand = (commandToExecute, outputOptions) => {
 };
 
 let findHighestCompatibleVersion = (globalPackage, projectGlobals, listVersionsCommand) => { // get highest version from terminal or prompt output
-    const nodeVersionPattern = /([0-9]+(?:\.[0-9-a-z]+)+)/g;
+    let versionPattern = /([0-9]+(?:\.[0-9-a-z]+)+)/g;
     let matchVersionsOptions = {
         resolve: (resolve, data) => {
-            let match = nodeVersionPattern.exec(data);
+            let match = versionPattern.exec(data);
             let allVersions = [];
             while (match !== null) {
                 allVersions.push(match[0]);
-                match = nodeVersionPattern.exec(data);
+                match = versionPattern.exec(data);
             }
             let tool = {};
             tool.name = globalPackage;
@@ -236,50 +237,6 @@ let goUpDirectories = numberOfDirectories => {
 let getSystemEnvironmentVariableForWindows = variableName => '[Environment]::GetEnvironmentVariable(\'' + variableName + '\', \'Machine\')';
 let setSystemEnvironmentVariable = (variableName, variableValue) => '[Environment]::SetEnvironmentVariable(\'' + variableName + '\', ' + variableValue + ', \'Machine\')';
 
-let installAngularUiDependenciesWithYarn = () => {
-    console.log('installing npm dependencies in angular-ui project folder.');
-    let installAngularUiYarn = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
-    installAngularUiYarn += (operatingSystem === 'win32') ? ';' + getNpmPathOnWindows() + '\\yarn.cmd install' : ' && yarn install';
-    return executeSystemCommand(getSystemCmd(installAngularUiYarn), formattedOutputOptions)
-        .catch(error => {
-            console.log('npm install failed in angular ui folder with the following message:\n');
-            console.log(error);
-        });
-};
-let updateWebdriver = () => {
-    console.log('updating webdriver in angular-ui project folder.');
-    let updateWebDriver = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
-    updateWebDriver += (operatingSystem === 'win32') ? '; npm run update-webdriver' : ' && npm run update-webdriver';
-    return executeSystemCommand(getSystemCmd(updateWebDriver), formattedOutputOptions)
-        .catch(error => {
-            console.log('updating webdriver failed in angular-ui project folder with the following message:\n');
-            console.log(error);
-        });
-};
-let getNpmPathOnWindows = () => {
-    const windowsDirectoryPattern = /C:\\[^;]+npm/g;
-    let pathToNpm = windowsDirectoryPattern.exec(process.env.Path);
-    return (pathToNpm) ? pathToNpm[0] : process.env.APPDATA + '\\npm';
-};
-let runGruntPremerge = () => {
-    let premergeOptions = {};
-    premergeOptions.resolve = formattedOutputOptions.resolve;
-    premergeOptions.stdout = formattedOutputOptions.stdout;
-    premergeOptions.exit = (resolve, reject, data) => {
-        resolve(data);
-    };
-
-    let gruntCmd = 'cd ' + goUpDirectories(projectRoot) + 'angular-ui';
-
-    // handle older versions of windows that do not source npm cmd's correctly
-    gruntCmd += (operatingSystem === 'win32') ? ';' + getNpmPathOnWindows() + '\\grunt.cmd pre-merge' : ' && grunt pre-merge';
-    let fullGruntCmd = getSystemCmd(gruntCmd);
-    return executeSystemCommand(fullGruntCmd, premergeOptions)
-        .catch(error => {
-            console.log('failed to complete grunt pre-merge, failed with message:\n');
-            console.log(error);
-        });
-};
 let endProcessWithMessage = (message, delay, exitCode) => {
     console.log(message);
     setTimeout(() => {
@@ -310,7 +267,4 @@ module.exports = {
     listOptionals: listOptionals,
     goUpDirectories: goUpDirectories,
     endProcessWithMessage: endProcessWithMessage,
-    runGruntPremerge: runGruntPremerge,
-    installAngularUiDependenciesWithYarn: installAngularUiDependenciesWithYarn,
-    updateWebdriver: updateWebdriver
 };
