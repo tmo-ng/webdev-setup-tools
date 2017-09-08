@@ -8,7 +8,19 @@ A small library of core utility functions used by the webdev-setup-tools plugins
   npm install webdev-setup-tools --save
 
 ## Purpose
-Often , the
+One of the hardest parts of joining a modern commercial software development team can be getting the tools for development properly configured. This is
+especially common on larger teams, that often contain employees from numerous consultancy firms. This can take anywhere from several weeks to
+several months and is a major source of frustration and headaches to both software developers and their managers. This has been the primary motivation
+for the development of this package. That is, to automate tool setup and configuration for modern commercial software development teams that are a mix of
+contract and full time employees, and equipment is not standardized. Many large tech companies have in house automation software, but it is frequently constrained
+to one particular operating system and a small set of company sponsored tools.
+
+It was designed to be largely idempotent. That is, after the the system is properly configured,
+no new modifications will be made. However, it was also developed to keep user dependencies up to
+date. For this reason, it should be run regularly. When newer packages become available and the user
+has an older compatible version of a package, the user can choose to ignore an update. If a user has
+an older incompatible package, this package will be updated to the highest compatible version of the package
+automatically.
 
 ## Configuration
 
@@ -50,12 +62,7 @@ This field typically has the following syntax:
 }
 ```
 
-It was designed to be largely idempotent. That is, after the the system is properly configured,
-no new modifications will be made. However, it was also developed to keep user dependencies up to
-date. For this reason, it should be run regularly. When newer packages become available and the user
-has an older compatible version of a package, the user can choose to ignore an update. If a user has
-an older incompatible package, this package will be updated to the highest compatible version of the package
-automatically.
+
 
 It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
 OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
