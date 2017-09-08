@@ -34,29 +34,16 @@ This field typically has the following syntax:
 "web-dev-setup-tools": {
   "node": {
     "install": ">=7.0.0",
-    // other package imports ...
+    // npm package imports ...
     }
   },
   "ruby": {
     "install": "^2.0.0",
-    "gems": {
-      "sass":"^3.0.0"
-    }
+    // gem package imports ...
   },
   "maven": "3.5.0",
   "aem": {
-    "author": {
-      "aem6-author-p4009.jar": "https://sample.com/aem6-author-p4009.jar"
-    },
-    "license": {
-      "license.properties": "https://sample.com/license.properties"
-    },
-    "zip_files": {
-      "acs-aem-2.12.0-min.zip": "https://github.com/acs-aem-2.12.0-min.zip",
-      "AEM-2-6.1.SP2.zip": "https://sample.com/AEM-2-6.1.SP2.zip",
-      "cq-6.1.0-sp2-cf-1.0.zip": "https://sample.com/cq-6.1.0-sp2-cf-1.0.zip",
-      "BRT_content_07.zip": "https://sample.com/BRT_content_07.zip"
-    }
+    // aem package imports
   },
   "java": ">1.7.0"
 }
