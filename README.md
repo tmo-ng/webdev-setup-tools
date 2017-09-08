@@ -34,16 +34,19 @@ This field typically has the following syntax:
 "web-dev-setup-tools": {
   "node": {
     "install": ">=7.0.0",
-    // npm package imports ...
+    "globals": {
+       // npm packages to install ...
     }
   },
   "ruby": {
     "install": "^2.0.0",
-    // gem package imports ...
+    "gems": {
+      // gems to install ...
+    }
   },
   "maven": "3.5.0",
   "aem": {
-    // aem package imports
+    // aem package configuration ...
   },
   "java": ">1.7.0"
 }
