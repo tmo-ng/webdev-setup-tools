@@ -15,7 +15,7 @@ for the development of this package. That is, to automate tool setup and configu
 contract and full time employees, and equipment is not standardized. Many large tech companies have in house automation software, but it is frequently constrained
 to one particular operating system and a small set of company sponsored tools.
 
-It was designed to be largely idempotent. That is, after the the system is properly configured,
+The package was designed to be idempotent. That is, after the the system is properly configured,
 no new modifications will be made. However, it was also developed to keep user dependencies up to
 date. For this reason, it should be run regularly. When newer packages become available and the user
 has an older compatible version of a package, the user can choose to ignore an update. If a user has
