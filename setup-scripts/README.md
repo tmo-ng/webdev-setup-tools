@@ -2,7 +2,7 @@ webdev-setup-tools
 =======================
 
 ## Setup Scripts
-Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included at the root of the npm package.
+Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included in the setup-scripts directory.
 
 **setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools folder in a terminal window, and enter the following commands:
   ```sh
