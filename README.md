@@ -25,9 +25,8 @@ OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ## Configuration
 
-This package should be installed in the
-node modules folder located in the root of the project folder.
-It determines the packages to install from the "web-dev-setup-tools" field in the package.json in the project root.
+This package should be installed using npm in the root of the project folder.
+This suite of tools looks for the "web-dev-setup-tools" property in the package.json in the project root.
 This field typically has the following syntax:
 
 
