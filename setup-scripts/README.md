@@ -2,7 +2,8 @@ webdev-setup-tools
 =======================
 
 ## Setup Scripts
-Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included in the setup-scripts directory.
+A number of configuration scripts are included in this folder.
+setup.bat (windows) and setup.sh (osx/linux), one powershell script nodeInstallerScript.ps1, and a sample script to setup.js are included in the setup-scripts folder.
 
 **setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools folder in a terminal window, and enter the following commands:
   ```sh

@@ -58,13 +58,13 @@ powershell.exe -command "$client = New-Object System.Net.WebClient;$client.Heade
 msiexec /qn /l* C:\node-log.txt /i !downloadsFolder!node-!latestNodeVersion!-x64.msi
 set userNodeVersion=!latestNodeVersion!
 echo node was installed with version !latestNodeVersion!
-cd ../../ && powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); npm install --scripts-prepend-node-path=true;" && call :StartNodeScript
+cd ../../../ && powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); npm install --scripts-prepend-node-path=true;" && call :StartNodeScript
 exit /b 0
 
 :ValidateNode
-cd ../../ && npm install --scripts-prepend-node-path=true && call :CheckNodeCompatibility
+cd ../../../ && npm install --scripts-prepend-node-path=true && call :CheckNodeCompatibility
 exit /b 0
 
 :StartNodeScript
-powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); node -e \"require('./node_modules/webdev-setup-tools/setup.js').installEverything()\";"
+powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); node ./node_modules/webdev-setup-tools/setup-scripts/setup.js;"
 exit /b 0

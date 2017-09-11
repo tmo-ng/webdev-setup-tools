@@ -51,7 +51,7 @@ local_is_not_compatible () {
 }
 #install dependencies required by setup.js
 install_package_dependencies () {
-    if cd ../../; then
+    if cd ../../../; then
         npm install
     fi
 }
@@ -94,6 +94,6 @@ main () {
         fi
     fi
     echo "beginning full install"
-    bash -l -c "node -e \"require('./node_modules/webdev-setup-tools/setup.js').installEverything()\""
+    bash -l -c "node ./node_modules/webdev-setup-tools/setup-scripts/setup.js"
 }
 main
