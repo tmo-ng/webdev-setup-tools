@@ -20,7 +20,8 @@ no new modifications will be made. However, it was also developed to keep user d
 date. For this reason, it should be run regularly. When newer packages become available and the user
 has an older compatible version of a package, the user can choose to ignore an update. If a user has
 an older incompatible package, this package will be updated to the highest compatible version of the package
-automatically.
+automatically. It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
+OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ## Configuration
 
@@ -54,8 +55,7 @@ This field typically has the following syntax:
 
 
 
-It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
-OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
+
 
 ## webdev-setup-tools plugins
 webdev-setup-tools has a number of plugins available for installation including
@@ -67,27 +67,6 @@ webdev-setup-tools has a number of plugins available for installation including
 * [`webdev-setup-tools-maven `](https://github.com/cdejarlais/webdev-setup-tools-maven)
 
 
-## Setup Scripts
-Two setup scrips, setup.bat (windows) and setup.sh (osx/linux), are included at the root of the npm package.
-
-**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools folder in a terminal window, and enter the following commands:
-  ```sh
-  chmod 755 setup.sh
-  ./setup.sh
-  ```
-This script first installs node version manager (nvm) locally. It then installs the most recent version of node.
-Each time the script is run after the initial install, it will check for newer versions of node.
-When an update becomes available, it will prompt the user for confirmation, then install the newest version of node.
-
-
-
-**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools folder in a command prompt with administrative priveleges, and enter the following command:
-```sh
-setup.bat
-```
-This batch file first downloads the latest msi package from the official nodejs repository, then performs a silent
-installation of the msi package. Each time the script is run after the initial install, it will check for newer versions of node.
-When an update becomes available, it will prompt the user for confirmation, then update to the newest version of node.
 ## Usage
 **Note:** summary of the most common methods used in the plugins
 
