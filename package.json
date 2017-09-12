@@ -1,7 +1,7 @@
 {
   "main": "webdev-setup-tools.js",
   "name": "webdev-setup-tools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Setup and install packackes required for many web development tasks",
   "repository": {
     "type": "git",
@@ -25,11 +25,11 @@
   },
   "contributors": [
     {
-      "name" : "Kendrick Burson",
+      "name": "Kendrick Burson",
       "email": "Kendrick.Burson3@T-Mobile.com"
     },
     {
-      "name" : "Chris DeJarlais",
+      "name": "Chris DeJarlais",
       "email": "Christopher.DeJarlais1@T-Mobile.com"
     }
   ]
