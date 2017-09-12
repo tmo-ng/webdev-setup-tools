@@ -1,6 +1,6 @@
 webdev-setup-tools
 =======================
-![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)
+![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)
 
 
 

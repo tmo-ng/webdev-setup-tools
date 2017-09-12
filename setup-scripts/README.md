@@ -1,6 +1,6 @@
 webdev-setup-tools
 =======================
-![T-Mobile](../images/t-mobile.png) ![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)
+![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)
 ## Setup Scripts
 A number of configuration scripts are included in this folder.
 setup.bat (windows) and setup.sh (osx/linux), one powershell script nodeInstallerScript.ps1,
