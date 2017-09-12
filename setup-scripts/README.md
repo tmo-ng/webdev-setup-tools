@@ -1,17 +1,21 @@
+![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)
+
+
 webdev-setup-tools
 =======================
-![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)![T-Mobile](../images/t-mobile.png)
 ## Setup Scripts
-A number of configuration scripts are included in this folder.
-setup.bat (windows) and setup.sh (osx/linux), one powershell script nodeInstallerScript.ps1,
-and a sample script to setup.js are included in the setup-scripts folder.
+The following configuration scripts are included in this folder:
+
+* setup.sh (osx/linux)
+* setup.bat (windows)
+* nodeInstallerScript.ps1 (windows)
+* setup.js
 
 **setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools/setup-scripts folder in a terminal window, and enter the following commands:
   ```sh
   chmod 755 setup.sh
   ./setup.sh
   ```
-
 setup.sh performs the following actions:
 * installs node version manager (nvm) locally
 * installs/updates local version of node
@@ -23,8 +27,14 @@ setup.sh performs the following actions:
 setup.bat
 ```
 setup.bat performs the following actions:
-* installs node version manager (nvm) locally
+* verifies the proper
 * installs/updates local version of node
+* runs the setup.js file in setup-scripts folder
+
+**nodeInstallerScript.ps1:** This is a helper script for the main windows setup.bat
+that performs the following actions:
+* Checks the locally installed version of powershell
+* Checks for the most recent node version
 * runs the setup.js file in setup-scripts folder
 
 **setup.js:** To run setup.js, navigate to the node_modules/webdev-setup-tools/setup-scripts folder in a terminal window, and enter the following commands:

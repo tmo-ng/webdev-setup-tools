@@ -10,6 +10,7 @@ function FindMostRecentVersion
         return $matches[0]
     }
   }
+  return 'False'
 }
 function InstallMostRecentVersion
 {

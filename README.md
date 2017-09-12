@@ -1,6 +1,8 @@
+![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)
+
+
 webdev-setup-tools
 =======================
-![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)![T-Mobile](./images/t-mobile.png)
 
 
 
@@ -120,7 +122,7 @@ a command prompt:
   powershell.exe -command "get-executionpolicy"
   ```
 
-**Note:**  To view the set the powershell execution policy for windows, copy and paste the following command in
+**Note:**  To set the powershell execution policy for windows, copy and paste the following command in
 a command prompt:
 
 ```sh
