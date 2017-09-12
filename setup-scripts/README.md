@@ -26,7 +26,7 @@ setup.sh performs the following actions:
 setup.bat
 ```
 setup.bat performs the following actions:
-* verifies the proper
+* verifies minimum system requirements are met
 * installs/updates local version of node
 * runs the setup.js file in setup-scripts folder
 
@@ -34,7 +34,6 @@ setup.bat performs the following actions:
 that performs the following actions:
 * Checks the locally installed version of powershell
 * Checks for the most recent node version
-* runs the setup.js file in setup-scripts folder
 
 **setup.js:** To run setup.js, navigate to the node_modules/webdev-setup-tools/setup-scripts folder in a terminal window, and enter the following commands:
   ```sh
