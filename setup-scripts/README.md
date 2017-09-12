@@ -3,26 +3,59 @@ webdev-setup-tools
 
 ## Setup Scripts
 A number of configuration scripts are included in this folder.
-setup.bat (windows) and setup.sh (osx/linux), one powershell script nodeInstallerScript.ps1, and a sample script to setup.js are included in the setup-scripts folder.
+setup.bat (windows) and setup.sh (osx/linux), one powershell script nodeInstallerScript.ps1,
+and a sample script to setup.js are included in the setup-scripts folder.
 
-**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools folder in a terminal window, and enter the following commands:
+**setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools/setup-scripts folder in a terminal window, and enter the following commands:
   ```sh
   chmod 755 setup.sh
   ./setup.sh
   ```
-This script first installs node version manager (nvm) locally. It then installs the most recent version of node.
-Each time the script is run after the initial install, it will check for newer versions of node.
-When an update becomes available, it will prompt the user for confirmation, then install the newest version of node.
+
+setup.sh performs the following actions:
+* installs node version manager (nvm) locally
+* installs/updates local version of node
+* runs the setup.js file in setup-scripts folder
 
 
-
-**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools folder in a command prompt with administrative priveleges, and enter the following command:
+**setup.bat:** To run setup.bat, navigate to node_modules/webdev-setup-tools/setup-scripts folder in a command prompt with administrative priveleges, and enter the following command:
 ```sh
 setup.bat
 ```
-This batch file first downloads the latest msi package from the official nodejs repository, then performs a silent
-installation of the msi package. Each time the script is run after the initial install, it will check for newer versions of node.
-When an update becomes available, it will prompt the user for confirmation, then update to the newest version of node.
+setup.bat performs the following actions:
+* installs node version manager (nvm) locally
+* installs/updates local version of node
+* runs the setup.js file in setup-scripts folder
+
+**setup.js:** To run setup.js, navigate to the node_modules/webdev-setup-tools/setup-scripts folder in a terminal window, and enter the following commands:
+  ```sh
+  node setup.js
+  ```
+The following snippet from setup.js displays how to import all required modules for a full installation:
+  ```sh
+const setup = require('webdev-setup-tools'); // import core module
+const ruby = require('webdev-setup-tools-ruby'); // import ruby plugin
+const npm = require('webdev-setup-tools-npm-globals'); // import npm plugin
+const maven = require('webdev-setup-tools-maven'); // import maven plugin
+const aem = require('webdev-setup-tools-aem'); // import aem plugin
+const gems = require('webdev-setup-tools-gems'); // import gems plugin
+const java = require('webdev-setup-tools-java'); // import java plugin
+  ```
+
+The following snippet from setup.js displays an example installation procedure:
+  ```sh
+let fullInstall = () => {
+    ruby.installRuby() // install ruby
+        .then(() => gems.installGems()) // install gems
+        .then(() => npm.installNpmPackages()) // install npm packagea
+        .then(() => java.installJava()) // walk through java installation
+        .then(() => maven.installMaven()) // install maven
+        .then(() => aem.installAem()) // install aem
+        .then(() => setup.endProcessWithMessage('You are now ready for development.',
+            5 * seconds, 0)); // finish
+};
+fullInstall();
+  ```
 
 ### Important Notes
 
