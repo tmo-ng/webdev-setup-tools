@@ -1,4 +1,4 @@
-![T-Mobile](../images/T-Mobile_NextGen-Alternate.png)
+![T-Mobile](../images/T-Mobile_NextGen-Magenta.png)
 
 webdev-setup-tools
 =======================
