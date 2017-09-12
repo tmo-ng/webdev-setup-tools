@@ -8,6 +8,11 @@ A small library of core utility functions used by the webdev-setup-tools plugins
   npm install webdev-setup-tools --save
 
 ## Purpose
+* Automate tool setup and configuration for modern commercial software development teams
+* Reduce tool configuration and setup from several days or weeks to potentially minutes
+* Cross Platform setup of all tools for Windows 7+, OSX, and Linux
+* Only compatible updates are installed
+
 One of the hardest parts of joining a modern commercial software development team can be getting the tools for development properly configured. This is
 especially common on larger teams, that often contain employees from numerous consultancy firms. This can take anywhere from several days to
 several weeks and is a major source of frustration and headaches to both software developers and their managers. This has been the primary motivation
