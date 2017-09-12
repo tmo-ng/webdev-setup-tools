@@ -52,7 +52,7 @@ let fullInstall = () => {
         .then(() => maven.installMaven()) // install maven
         .then(() => aem.installAem()) // install aem
         .then(() => setup.endProcessWithMessage('You are now ready for development.',
-            5 * seconds, 0)); // finish
+            5 * seconds, 0)); // finish installation with message
 };
 fullInstall();
   ```
