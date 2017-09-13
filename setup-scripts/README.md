@@ -8,7 +8,7 @@ The following configuration scripts are included in this folder:
 * setup.sh (osx/linux)
 * setup.bat (windows)
 * nodeInstallerScript.ps1 (windows)
-* setup.js
+* example-setup.js
 
 **setup.sh:** To run setup.sh, navigate to the node_modules/webdev-setup-tools/setup-scripts folder in a terminal window, and enter the following commands:
   ```sh
@@ -36,7 +36,7 @@ that performs the following actions:
 * Checks for the most recent node version
 
 **example-setup.js:** This script displays a sample tool setup procedure
-The following snippet from setup.js displays how to import all required modules for a full installation:
+The following snippet from example-setup.js displays how to import all required modules for a full installation:
   ```sh
 const setup = require('webdev-setup-tools'); // import core module
 const ruby = require('webdev-setup-tools-ruby'); // import ruby plugin
@@ -47,7 +47,7 @@ const gems = require('webdev-setup-tools-gems'); // import gems plugin
 const java = require('webdev-setup-tools-java'); // import java plugin
   ```
 
-The following snippet from setup.js displays an example installation procedure:
+The following snippet from example-setup.js displays an example installation procedure:
   ```sh
 let fullInstall = () => {
     ruby.installRuby() // install ruby
