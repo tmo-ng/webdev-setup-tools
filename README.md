@@ -1,4 +1,4 @@
-![T-Mobile](./images/T-Mobile_NextGen-Magenta-Small.png)
+![T-Mobile](./images/T-Mobile-NextGen-Magenta-Tiny.png)
 
 webdev-setup-tools
 =======================
@@ -46,11 +46,12 @@ webdev-setup-tools has a number of plugins available for installation including
 
 
 ## Usage
+copy the setup-scripts folder in the project root, modify package.json (see README in setup-scripts for sample project configuration), and add setup.js file to setup-scripts folder.
 
+## Configuration
 This package should be installed using npm in the root of the project folder.
 This suite of tools looks for the "web-dev-setup-tools" property in the package.json in the project root.
 This field typically has the following syntax:
-
 
 ```sh
 "web-dev-setup-tools": {
@@ -73,28 +74,7 @@ This field typically has the following syntax:
   "java": ">1.7.0"
 }
 ```
-  download a package from the specified url
-  ```sh
-  let setup_tools = require('webdev-setup-tools');
-  setup_tools.downloadPackage('http://apache.mirrors.tds.net/3.5.0/binaries/apache-maven-3.5.0-bin.zip', 'C:\'); // download file to destination 'C:\'
-  ```
-  get a command formatted for either bash or powershell depending on the operating system
-  ```sh
-  let setup_tools = require('webdev-setup-tools');
-  setup_tools.getSystemCommand('java -jar setup.jar');
-  ```
-  get object with version and downloadHyperlink fields from a webpage for the highest values in semantic version range
-  ```sh
-  let setup_tools = require('webdev-setup-tools');
-  let versionRange = '~3.0.0';
-  let downloadPattern = /http[^"]+maven-([0-9.]+)-bin\.tar\.gz/g;
-  let mavenUrl = 'https://maven.apache.org/download.cgi';
-  return setup_tools.getVersionWithRequest(mavenUrl, downloadPattern, versionRange);
-  ```
-
-## Configuration
-
-### Important Notes
+### Important Notes For Windows Users
 
 **Note:** In order to install most packages, users will need to have administrative access on their computer.
 
