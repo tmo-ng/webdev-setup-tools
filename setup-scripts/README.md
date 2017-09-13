@@ -35,10 +35,7 @@ that performs the following actions:
 * Checks the locally installed version of powershell
 * Checks for the most recent node version
 
-**setup.js:** To run setup.js, navigate to the node_modules/webdev-setup-tools/setup-scripts folder in a terminal window, and enter the following commands:
-  ```sh
-  node setup.js
-  ```
+**example-setup.js:** This script displays a sample tool setup procedure
 The following snippet from setup.js displays how to import all required modules for a full installation:
   ```sh
 const setup = require('webdev-setup-tools'); // import core module
