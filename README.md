@@ -35,14 +35,6 @@ an older incompatible package, this package will be updated to the highest compa
 automatically. It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
 OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
-## Configuration
-
-
-
-
-
-
-
 ## webdev-setup-tools plugins
 webdev-setup-tools has a number of plugins available for installation including
 * [`webdev-setup-tools-npm-globals `](https://github.com/cdejarlais/webdev-setup-tools-npm-globals)
@@ -100,13 +92,7 @@ This field typically has the following syntax:
   return setup_tools.getVersionWithRequest(mavenUrl, downloadPattern, versionRange);
   ```
 
-
-
-
-
-
-
-
+## Configuration
 
 ### Important Notes
 
