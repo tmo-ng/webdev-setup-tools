@@ -6,27 +6,29 @@ webdev-setup-tools
 
 
 webdev-setup-tools is a suite of tools designed to streamline the installation and
-setup of the most common tools used in modern open source web development.
+setup of the most common tools used in modern web development.
+
+## Inspiration
+One of the hardest parts of joining a modern software development team can be getting the tools for development properly configured. This is
+especially common on larger teams, that often contain employees from numerous consultancy firms. This can take anywhere from several days to
+several weeks and is a major source of frustration and headaches to both software developers and their managers. This has been the primary motivation
+for the development of this suite of tools. That is, to automate tool setup and configuration for modern software development teams.
+Many large tech companies have in house IT management software to automatically update or configure workstations. This solution is frequently constrained
+to one particular operating system (Windows) and a small set of company sponsored tools (Microsoft).
 
 ## Install with npm
 
   npm install webdev-setup-tools --save
 
 ## Purpose
-* Automate tool setup and configuration for modern open source software development teams
-* Reduce tool configuration and setup times from several days or weeks to minutes
-* Cross Platform setup of all tools for Windows 7+, OSX, and Linux
+* Automate tool setup and configuration for modern software development teams
+    * Manually, this can take from several days to weeks.
+* Cross Platform setup of all tools (tested on Windows 7, Windows 10, OSX and Linux)
 * Only compatible updates are installed
+* Tool setup configuration committed with project source code
 
-One of the hardest parts of joining a modern commercial software development team can be getting the tools for development properly configured. This is
-especially common on larger teams, that often contain employees from numerous consultancy firms. This can take anywhere from several days to
-several weeks and is a major source of frustration and headaches to both software developers and their managers. This has been the primary motivation
-for the development of this suite of tools. That is, to automate tool setup and configuration for modern commercial software development teams.
-Many large tech companies have in house IT management software, but it is frequently constrained
-to one particular operating system and a small set of company sponsored tools.
-
-This package was designed to be cross platform and openly configurable for the set of tools required by project administrator.
-It was also designed to be idempotent. In this way, it was also developed to keep user dependencies up to
+This package was designed to be cross platform and openly configurable for the set of tools required by the project.
+It was also designed to be idempotent, in that it can be run multiple times without changing the result. It was also developed to keep user dependencies up to
 date. For this reason, it should be run regularly. When newer packages become available and the user
 has an older compatible version of a package, the user can choose to ignore an update. If a user has
 an older incompatible package, this package will be updated to the highest compatible version of the package
