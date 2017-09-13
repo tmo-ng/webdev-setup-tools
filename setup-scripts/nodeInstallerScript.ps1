@@ -1,4 +1,4 @@
-function FindMostRecentVersion
+function FindMostRecentNodeVersion
 {
   $URI = "https://nodejs.org/dist/latest/"
   $HTML = Invoke-WebRequest -Uri $URI
@@ -21,7 +21,7 @@ function UpdateToMostRecentVersion
 {
 
 }
-function FindPowershellVersion
+function IsPowershellVersionCompatible
 {
     $output = Get-Host | Select-Object Version
     $version = $output -match '(?<major_version>[0-9]+)(?:\.[0-9]+)+'
@@ -29,4 +29,9 @@ function FindPowershellVersion
         return $matches['major_version'] -ge 3
     }
     return 'False'
+}
+function IsScriptExecutionEnabled
+{
+    $policy = Get-ExecutionPolicy
+    return $policy -ne "restricted"
 }

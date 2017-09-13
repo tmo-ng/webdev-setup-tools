@@ -4,22 +4,32 @@ set userNodeVersion=""
 set latestNodeVersion=""
 set downloadsFolder=%userprofile%\Downloads\
 set npmCmd=npm
-set powershellVersion=""
-for /f "tokens=*" %%i in ('powershell -command "& { . .\nodeInstallerScript.ps1; FindPowershellVersion }"') do (
-    set powershellVersion=%%i
+set hasMinPsVersion=""
+set hasScriptExecEnabled=""
+for /f "tokens=*" %%i in ('powershell -command "& { . .\nodeInstallerScript.ps1; IsPowershellVersionCompatible }"') do (
+    set hasMinPsVersion=%%i
 )
-if !powershellVersion! == False (
+if !hasMinPsVersion! == False (
     set /p missingPrompt=This program requires powershell version 3.0 or higher.
     set /p missingPrompt=This can be downloaded at https://www.microsoft.com/en-us/download/details.aspx?id=34595
     exit /b 0
 )
-set /p missingPrompt=This program must be run with administrative privileges.
+for /f "tokens=*" %%i in ('powershell -command "& { . .\nodeInstallerScript.ps1; IsScriptExecutionEnabled }"') do (
+    set hasScriptExecEnabled=%%i
+)
+if !hasScriptExecEnabled! == False (
+    set /p missingPrompt=This program requires powershell script execution to be enabled.
+    set /p missingPrompt=See the README in this folder for instructions on setting your policy.
+    exit /b 0
+)
 for /f "tokens=*" %%i in ('node -v 2^>nul') do (
     set userNodeVersion=%%i
 )
-for /f "tokens=*" %%i in ('powershell -command "& { . .\nodeInstallerScript.ps1; FindMostRecentVersion }"') do (
+for /f "tokens=*" %%i in ('powershell -command "& { . .\nodeInstallerScript.ps1; FindMostRecentNodeVersion }"') do (
     set latestNodeVersion=%%i
 )
+set /p missingPrompt=This script requires administrative privileges. Press Enter to continue.
+
 if !userNodeVersion! == "" (
     call :InstallNode
     exit /b 0
