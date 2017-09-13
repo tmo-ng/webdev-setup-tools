@@ -36,6 +36,7 @@ that performs the following actions:
 * Checks for the most recent node version
 
 **example-setup.js:** This script displays a sample tool setup procedure
+
 The following snippet from example-setup.js displays how to import all required modules for a full installation:
   ```sh
 const setup = require('webdev-setup-tools'); // import core module
