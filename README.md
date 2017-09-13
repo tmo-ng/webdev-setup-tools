@@ -6,15 +6,14 @@ webdev-setup-tools
 
 
 webdev-setup-tools is a suite of tools designed to streamline the installation and
-setup of the most common tools used in modern commercial web development.
-This module is a small library of core utility functions used by the webdev-setup-tools plugins.
+setup of the most common tools used in modern open source web development.
 
 ## Install with npm
 
   npm install webdev-setup-tools --save
 
 ## Purpose
-* Automate tool setup and configuration for modern commercial software development teams
+* Automate tool setup and configuration for modern open source software development teams
 * Reduce tool configuration and setup times from several days or weeks to minutes
 * Cross Platform setup of all tools for Windows 7+, OSX, and Linux
 * Only compatible updates are installed
@@ -35,6 +34,24 @@ automatically. It was also developed to work on Windows 7+, OSX, and Linux. It h
 OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 
 ## Configuration
+
+
+
+
+
+
+
+## webdev-setup-tools plugins
+webdev-setup-tools has a number of plugins available for installation including
+* [`webdev-setup-tools-npm-globals `](https://github.com/cdejarlais/webdev-setup-tools-npm-globals)
+* [`webdev-setup-tools-aem `](https://github.com/cdejarlais/webdev-setup-tools-aem)
+* [`webdev-setup-tools-ruby `](https://github.com/cdejarlais/webdev-setup-tools-ruby)
+* [`webdev-setup-tools-gems `](https://github.com/cdejarlais/webdev-setup-tools-gems)
+* [`webdev-setup-tools-java `](https://github.com/cdejarlais/webdev-setup-tools-java)
+* [`webdev-setup-tools-maven `](https://github.com/cdejarlais/webdev-setup-tools-maven)
+
+
+## Usage
 
 This package should be installed using npm in the root of the project folder.
 This suite of tools looks for the "web-dev-setup-tools" property in the package.json in the project root.
@@ -62,24 +79,6 @@ This field typically has the following syntax:
   "java": ">1.7.0"
 }
 ```
-
-
-
-
-
-## webdev-setup-tools plugins
-webdev-setup-tools has a number of plugins available for installation including
-* [`webdev-setup-tools-npm-globals `](https://github.com/cdejarlais/webdev-setup-tools-npm-globals)
-* [`webdev-setup-tools-aem `](https://github.com/cdejarlais/webdev-setup-tools-aem)
-* [`webdev-setup-tools-ruby `](https://github.com/cdejarlais/webdev-setup-tools-ruby)
-* [`webdev-setup-tools-gems `](https://github.com/cdejarlais/webdev-setup-tools-gems)
-* [`webdev-setup-tools-java `](https://github.com/cdejarlais/webdev-setup-tools-java)
-* [`webdev-setup-tools-maven `](https://github.com/cdejarlais/webdev-setup-tools-maven)
-
-
-## Usage
-**Note:** summary of the most common methods used in the plugins
-
   download a package from the specified url
   ```sh
   let setup_tools = require('webdev-setup-tools');
