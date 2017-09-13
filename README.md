@@ -1,12 +1,13 @@
-![T-Mobile](./images/T-Mobile_NextGen-Magenta.png)
-
+![T-Mobile](./images/T-Mobile_NextGen-Magenta-Small.png)
 
 webdev-setup-tools
 =======================
 
 
 
-A small library of core utility functions used by the webdev-setup-tools plugins.
+webdev-setup-tools is a suite of tools designed to streamline the installation and
+setup of the most common tools used in modern commercial web development.
+This module is a small library of core utility functions used by the webdev-setup-tools plugins.
 
 ## Install with npm
 
@@ -14,7 +15,7 @@ A small library of core utility functions used by the webdev-setup-tools plugins
 
 ## Purpose
 * Automate tool setup and configuration for modern commercial software development teams
-* Reduce tool configuration and setup from several days or weeks to potentially minutes
+* Reduce tool configuration and setup times from several days or weeks to minutes
 * Cross Platform setup of all tools for Windows 7+, OSX, and Linux
 * Only compatible updates are installed
 
