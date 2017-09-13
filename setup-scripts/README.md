@@ -62,7 +62,7 @@ let fullInstall = () => {
 fullInstall();
   ```
 
-### Important Notes
+### Important Notes For Windows Users
 
 **Note:** In order to install most packages, users will need to have administrative access on their computer.
 
