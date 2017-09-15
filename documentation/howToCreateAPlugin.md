@@ -1,4 +1,4 @@
-![T-Mobile](../images/T-Mobile-NextGen-Magenta-Tiny.png)
+![T-Mobile](./images/T-Mobile-NextGen-Magenta-Tiny.png)
 
 How To Create a Plugin
 ======================
