@@ -12,7 +12,7 @@ const seconds = 1000;
 let fullInstall = () => {
     ruby.installRuby()
         .then(() => gems.installGems())
-        .then(() => npm.installNpmPackages())
+        .then(() => npm.installNpmGlobalPackages())
         .then(() => java.installJava())
         .then(() => maven.installMaven())
         .then(() => aem.installAem())
