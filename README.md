@@ -53,8 +53,8 @@ webdev-setup-tools has a number of plugins available for installation including
 copy the setup-scripts folder from this npm package into your project root, modify your package.json to identify the tools and versions you need installed (see README in setup-scripts for sample project configuration), and add a setup.js file to setup-scripts folder (you can rename the sample and modify).
 
 ## Configuration
-This package should be installed using npm in the root of the project folder.
-This suite of tools looks for the "web-dev-setup-tools" property in the package.json in the project root.
+This package should be installed using npm as identified in the package.json in your project root.
+This suite of tools looks for the "web-dev-setup-tools" property in the package.json.
 This field typically has the following syntax:
 
 ```sh
