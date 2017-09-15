@@ -79,6 +79,7 @@ This field typically has the following syntax:
 }
 ```
 ### Important Notes For Windows Users
+**Note:** Due to built in Windows security features and restrictions, there are a number of additional steps that need to be taken by windows users.  
 
 **Note:** In order to install most packages, users will need to have administrative access on their computer.
 
