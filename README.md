@@ -29,12 +29,15 @@ This has been the primary motivation for the development of this suite of tools.
 * Tool setup configuration committed with project source code
 
 This package was designed to be cross platform and openly configurable for the set of tools required by your project.
+It was developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
+OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
 Furthermore it was also designed to be idempotent in that it can be run multiple times without changing the result.
-It was also developed to keep user dependencies up to date. For this reason, it can be run regularly. When newer packages become available and the user
+It was also developed to keep user dependencies up to date. For this reason, it can be run regularly. 
+
+When newer packages become available and the user
 has an older compatible version of a package, the user can choose to ignore an update. If a user has
 an older incompatible package, this package will be updated to the highest compatible version of the package
-automatically. It was also developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
-OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
+automatically. 
 
 ## webdev-setup-tools plugins
 webdev-setup-tools has a number of plugins available for installation including
