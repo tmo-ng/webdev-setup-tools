@@ -76,5 +76,5 @@ cd ../../../ && npm install --scripts-prepend-node-path=true && call :CheckNodeC
 exit /b 0
 
 :StartNodeScript
-powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); node ./node_modules/webdev-setup-tools/setup-scripts/setup.js;"
+powershell.exe -command "$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine'); node ./setup-scripts/setup.js;"
 exit /b 0
