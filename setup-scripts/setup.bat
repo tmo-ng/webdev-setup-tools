@@ -40,7 +40,7 @@ exit /b 0
 :CheckNodeCompatibility
 set notCompatible=""
 set nodePath=""
-for /f "tokens=*" %%i in ('node -e "console.log(require('semver').outside('!userNodeVersion:~1!', require('./package.json').globals.engines.node, '<'))"') do (
+for /f "tokens=*" %%i in ('node -e "console.log(require('semver').outside('!userNodeVersion:~1!', require('./package.json').web-dev-setup-tools.node.install, '<'))"') do (
     set notCompatible=%%i
 )
 for /f "tokens=*" %%i in ('where node.exe') do (
