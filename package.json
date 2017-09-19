@@ -2,7 +2,7 @@
   "main": "lib/webdev-setup-tools.js",
   "name": "webdev-setup-tools",
   "version": "1.0.1",
-  "description": "Setup and install packackes required for many web development tasks",
+  "description": "Setup and install packages required for many web development tasks",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tmo-ng/webdev-setup-tools.git"
