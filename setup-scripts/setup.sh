@@ -46,7 +46,7 @@ perform_optional_update () {
 }
 local_is_not_compatible () {
     localVersion=$1
-    isCompatible=$(node -e "console.log(require('semver').outside('$localVersion', require('./package.json').web-dev-setup-tools.node.install, '<'))")
+    isCompatible=$(node -e "console.log(require('semver').outside('$localVersion', require('./package.json')['web-dev-setup-tools']['node']['install'], '<'))")
     echo "$isCompatible"
 }
 #install dependencies required by setup.js
