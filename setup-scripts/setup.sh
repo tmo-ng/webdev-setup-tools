@@ -51,7 +51,7 @@ local_is_not_compatible () {
 }
 #install dependencies required by setup.js
 install_package_dependencies () {
-    if cd ../../../; then
+    if cd ../; then
         npm install
     fi
 }
