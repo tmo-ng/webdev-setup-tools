@@ -94,6 +94,6 @@ main () {
         fi
     fi
     echo "beginning full install"
-    bash -l -c "node ./setup-scripts/setup.js"
+    bash -l -c "cd ./setup-scripts && node ./setup.js"
 }
 main
