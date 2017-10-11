@@ -30,7 +30,7 @@ This has been the primary motivation for the development of this suite of tools.
 
 This package was designed to be cross platform and openly configurable for the set of tools required by your project.
 It was developed to work on Windows 7+, OSX, and Linux. It has been tested on Windows 7, Windows 10,
-OSX 10.11 (El Capitan), and Ubunto 16.04 and 17.04.
+OSX 10.11 (El Capitan), and Ubuntu 16.04 and 17.04.
 Furthermore it was also designed to be idempotent in that it can be run multiple times without changing the result.
 It was also developed to keep user dependencies up to date. For this reason, it can be run regularly. 
 
